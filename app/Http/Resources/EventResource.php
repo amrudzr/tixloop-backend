@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class EventResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,12 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
+            'event_name' => $this->event_name,
+            'event_category' => $this->event_category,
+            'event_datetime' => $this->event_datetime,
+            'venue_name' => $this->venue_name,
+            'city' => $this->city,
+            'event_poster_url' => $this->event_poster_url,
         ];
     }
 }
