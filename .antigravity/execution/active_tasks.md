@@ -1,10 +1,10 @@
 # Active Tasks
 
 ## Authentication
-- [ ] register endpoint
-- [ ] login endpoint
-- [ ] refresh token flow
-- [ ] logout flow
+- [x] register endpoint
+- [x] login endpoint
+- [x] refresh token flow
+- [x] logout flow
 
 ---
 
