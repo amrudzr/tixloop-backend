@@ -1,0 +1,4 @@
+- every endpoint requires feature tests
+- validation edge cases mandatory
+- auth endpoints require unauthorized tests
+- security-sensitive features require abuse tests

@@ -46,3 +46,12 @@ Directory:
 
 Format:
 [number]_[timestamp]_[activity].md
+
+---
+
+## Finalization Steps:
+1. Generate execution summary
+2. Store implementation log
+3. Update architecture trace if needed
+4. Update documentation if affected
+5. Return completion summary
