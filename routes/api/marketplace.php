@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Marketplace\ListingController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('marketplace')->group(function () {
 
