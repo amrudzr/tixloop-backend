@@ -1,7 +1,7 @@
 # Implementation Status
 
 ## Authentication
-Status: In Progress
+Status: Completed
 
 ## Marketplace
 Status: In Progress
