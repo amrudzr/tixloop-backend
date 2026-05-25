@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('ticket_type');
             $table->string('seat_number')->nullable();
             $table->decimal('price', 12, 2);
+            $table->string('ticket_file_path')->nullable();
             $table->boolean('is_verified')->default(false);
             $table->timestamps();
         });

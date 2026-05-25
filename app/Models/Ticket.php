@@ -22,6 +22,7 @@ class Ticket extends Model
         'ticket_type',
         'seat_number',
         'price',
+        'ticket_file_path',
         'is_verified',
     ];
 

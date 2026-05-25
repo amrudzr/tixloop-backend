@@ -4,6 +4,8 @@ use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -108,16 +110,19 @@ test('guest can view a single ticket', function () {
         ]);
 });
 
-test('authenticated user can list a ticket', function () {
+test('authenticated user can list a ticket with proof upload', function () {
+    Storage::fake('local');
     $user = User::factory()->create();
     $event = Event::factory()->create();
+
+    $file = UploadedFile::fake()->create('proof.pdf', 500, 'application/pdf');
 
     $ticketData = [
         'event_id' => $event->id,
         'ticket_type' => 'VIP Box',
         'seat_number' => 'A-1',
         'price' => 750000,
-        'is_verified' => false,
+        'ticket_file' => $file,
     ];
 
     $response = $this->actingAs($user, 'sanctum')
@@ -136,6 +141,10 @@ test('authenticated user can list a ticket', function () {
                 'is_verified' => false,
             ],
         ]);
+
+    $ticket = Ticket::first();
+    expect($ticket->ticket_file_path)->not->toBeNull();
+    Storage::disk('local')->assertExists($ticket->ticket_file_path);
 
     $this->assertDatabaseHas('tickets', [
         'event_id' => $event->id,
@@ -167,5 +176,54 @@ test('ticket creation validates required fields', function () {
         ->postJson('/api/v1/tickets', []);
 
     $response->assertStatus(422)
-        ->assertJsonValidationErrors(['event_id', 'ticket_type', 'price']);
+        ->assertJsonValidationErrors(['event_id', 'ticket_type', 'price', 'ticket_file']);
+});
+
+test('ticket creation rejects invalid file mime type and large size', function () {
+    Storage::fake('local');
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+
+    // Test invalid mime type (e.g. text/plain)
+    $invalidFile = UploadedFile::fake()->create('proof.txt', 100, 'text/plain');
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/tickets', [
+            'event_id' => $event->id,
+            'ticket_type' => 'VIP Box',
+            'price' => 750000,
+            'ticket_file' => $invalidFile,
+        ]);
+    $response->assertStatus(422)->assertJsonValidationErrors(['ticket_file']);
+
+    // Test large file (e.g. 3MB, limit is 2MB)
+    $largeFile = UploadedFile::fake()->create('proof.pdf', 3000, 'application/pdf');
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/tickets', [
+            'event_id' => $event->id,
+            'ticket_type' => 'VIP Box',
+            'price' => 750000,
+            'ticket_file' => $largeFile,
+        ]);
+    $response->assertStatus(422)->assertJsonValidationErrors(['ticket_file']);
+});
+
+test('ticket creation ignores is_verified input', function () {
+    Storage::fake('local');
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+    $file = UploadedFile::fake()->create('proof.pdf', 500, 'application/pdf');
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/tickets', [
+            'event_id' => $event->id,
+            'ticket_type' => 'VIP Box',
+            'price' => 750000,
+            'ticket_file' => $file,
+            'is_verified' => true, // Attempt to bypass system verification
+        ]);
+
+    $response->assertStatus(201);
+
+    $ticket = Ticket::where('event_id', $event->id)->first();
+    expect($ticket->is_verified)->toBeFalse();
 });

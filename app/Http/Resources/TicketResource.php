@@ -21,6 +21,7 @@ class TicketResource extends JsonResource
             'ticket_type' => $this->ticket_type,
             'seat_number' => $this->seat_number,
             'price' => (float) $this->price,
+            'ticket_file_path' => $this->ticket_file_path,
             'is_verified' => (bool) $this->is_verified,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

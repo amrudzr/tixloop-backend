@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TicketController extends Controller
 {
     /**
      * Display a listing of tickets with filtering and pagination.
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): JsonResponse
     {
         $query = Ticket::query()->with(['event', 'seller']);
 
@@ -51,24 +51,28 @@ class TicketController extends Controller
         $query->latest();
 
         $tickets = $query->paginate(15);
+        $paginated = TicketResource::collection($tickets)->response()->getData(true);
 
-        return TicketResource::collection($tickets)->additional([
+        return response()->json([
             'success' => true,
             'message' => 'Tickets retrieved successfully',
+            'data' => $paginated['data'],
+            'links' => $paginated['links'],
+            'meta' => $paginated['meta'],
         ]);
     }
 
     /**
      * Display the specified ticket.
      */
-    public function show(string $id): TicketResource
+    public function show(string $id): JsonResponse
     {
         $ticket = Ticket::with(['event', 'seller'])->findOrFail($id);
 
-        return (new TicketResource($ticket))->additional([
-            'success' => true,
-            'message' => 'Ticket retrieved successfully',
-        ]);
+        return ApiResponse::success(
+            new TicketResource($ticket),
+            'Ticket retrieved successfully'
+        );
     }
 
     /**
@@ -78,17 +82,21 @@ class TicketController extends Controller
     {
         $validated = $request->validated();
 
-        // Atur seller_id ke user yang sedang login
+        if ($request->hasFile('ticket_file')) {
+            $path = $request->file('ticket_file')->store('ticket_proofs', 'local');
+            $validated['ticket_file_path'] = $path;
+        }
+
+        unset($validated['ticket_file']);
         $validated['seller_id'] = $request->user()->id;
 
         $ticket = Ticket::create($validated);
-
-        // Load relasi event dan seller untuk response
         $ticket->load(['event', 'seller']);
 
-        return (new TicketResource($ticket))->additional([
-            'success' => true,
-            'message' => 'Ticket listed successfully',
-        ])->response()->setStatusCode(201);
+        return ApiResponse::success(
+            new TicketResource($ticket),
+            'Ticket listed successfully',
+            201
+        );
     }
 }

@@ -25,6 +25,7 @@ class TicketFactory extends Factory
             'ticket_type' => $this->faker->randomElement(['VIP', 'CAT 1', 'CAT 2', 'General Admission']),
             'seat_number' => $this->faker->optional(0.8)->bothify('??-##'),
             'price' => $this->faker->randomFloat(2, 50000, 1500000),
+            'ticket_file_path' => 'proofs/'.$this->faker->uuid().'.pdf',
             'is_verified' => $this->faker->boolean(40),
         ];
     }
