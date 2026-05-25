@@ -26,8 +26,8 @@ class StoreTicketRequest extends FormRequest
             'event_id' => 'required|string|exists:events,id',
             'ticket_type' => 'required|string|max:255',
             'seat_number' => 'nullable|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'is_verified' => 'nullable|boolean',
+            'price' => 'required|numeric|gt:0',
+            'ticket_file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ];
     }
 }

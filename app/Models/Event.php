@@ -20,11 +20,6 @@ class Event extends Model
         'event_poster_url',
     ];
 
-    public function listings(): HasMany
-    {
-        return $this->hasMany(ResaleListing::class);
-    }
-
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
