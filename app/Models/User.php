@@ -35,10 +35,18 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the tickets listed by the user.
+     * Get the tickets owned by the user.
      */
     public function tickets(): HasMany
     {
-        return $this->hasMany(Ticket::class, 'seller_id');
+        return $this->hasMany(Ticket::class, 'current_owner_id');
+    }
+
+    /**
+     * Get the resale listings created by the user.
+     */
+    public function resaleListings(): HasMany
+    {
+        return $this->hasMany(ResaleListing::class, 'seller_id');
     }
 }

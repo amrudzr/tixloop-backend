@@ -21,12 +21,39 @@ class TicketFactory extends Factory
     {
         return [
             'event_id' => Event::factory(),
-            'seller_id' => User::factory(),
-            'ticket_type' => $this->faker->randomElement(['VIP', 'CAT 1', 'CAT 2', 'General Admission']),
+            'current_owner_id' => User::factory(),
+            'original_buyer_id' => null,
+            'ticket_code' => strtoupper($this->faker->bothify('TIX-####-????')),
             'seat_number' => $this->faker->optional(0.8)->bothify('??-##'),
-            'price' => $this->faker->randomFloat(2, 50000, 1500000),
-            'ticket_file_path' => 'proofs/'.$this->faker->uuid().'.pdf',
-            'is_verified' => $this->faker->boolean(40),
+            'ticket_metadata' => null,
+            'ticket_proof_path' => null,
+            'ticket_proof_type' => null,
+            'proof_uploaded_at' => null,
+            'qr_secret_key' => null,
+            'device_binding_id' => null,
+            'status' => 'aktif',
         ];
+    }
+
+    /**
+     * Indicate that the ticket has proof uploaded.
+     */
+    public function withProof(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'ticket_proof_path' => 'ticket_proofs/'.$this->faker->uuid().'.pdf',
+            'ticket_proof_type' => $this->faker->randomElement(['application/pdf', 'image/jpeg', 'image/png']),
+            'proof_uploaded_at' => now(),
+        ]);
+    }
+
+    /**
+     * Indicate the ticket has original price metadata (required for listing creation).
+     */
+    public function withOriginalPrice(float $price = 500000): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'ticket_metadata' => ['original_price' => $price],
+        ]);
     }
 }

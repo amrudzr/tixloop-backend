@@ -17,16 +17,18 @@ class TicketResource extends JsonResource
         return [
             'id' => $this->id,
             'event_id' => $this->event_id,
-            'seller_id' => $this->seller_id,
-            'ticket_type' => $this->ticket_type,
+            'current_owner_id' => $this->current_owner_id,
+            'original_buyer_id' => $this->original_buyer_id,
+            'ticket_code' => $this->ticket_code,
             'seat_number' => $this->seat_number,
-            'price' => (float) $this->price,
-            'ticket_file_path' => $this->ticket_file_path,
-            'is_verified' => (bool) $this->is_verified,
+            'ticket_proof_path' => $this->ticket_proof_path,
+            'ticket_proof_type' => $this->ticket_proof_type,
+            'proof_uploaded_at' => $this->proof_uploaded_at,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'event' => new EventResource($this->whenLoaded('event')),
-            'seller' => new UserResource($this->whenLoaded('seller')),
+            'current_owner' => new UserResource($this->whenLoaded('currentOwner')),
         ];
     }
 }
