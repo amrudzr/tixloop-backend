@@ -7,5 +7,5 @@ Route::get('/tickets', [TicketController::class, 'index']);
 Route::get('/tickets/{id}', [TicketController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/tickets', [TicketController::class, 'store']);
+    Route::post('/tickets/upload', [TicketController::class, 'upload']);
 });
