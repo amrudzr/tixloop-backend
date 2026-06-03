@@ -20,6 +20,18 @@ class Event extends Model
         'event_poster_url',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'event_datetime' => 'datetime',
+        ];
+    }
+
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
