@@ -44,6 +44,10 @@ class ResaleListingFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'verification_status' => 'verified',
+            'listing_status' => 'aktif',
+            'verified_at' => now(),
+            'verified_by' => User::factory(),
+            'rejection_reason' => null,
         ]);
     }
 
@@ -54,6 +58,9 @@ class ResaleListingFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'verification_status' => 'rejected',
+            'listing_status' => 'ditangguhkan',
+            'verified_by' => User::factory(),
+            'rejection_reason' => 'Ticket proof is unreadable or forged.',
         ]);
     }
 }
