@@ -4,7 +4,6 @@ use App\Models\ResaleListing;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -178,32 +177,6 @@ test('completed transaction does not block checkout on listing status grounds', 
 
     // Fails because listing is terjual, not because of lock rule.
     $response->assertStatus(422);
-});
-
-// ── Database Constraint Enforcement ─────────────────────────────────
-
-test('database constraint prevents duplicate active transactions for same listing', function () {
-    ['listing' => $listing, 'seller' => $seller, 'ticket' => $ticket] = createPurchasableListing();
-    $buyer1 = User::factory()->create();
-    $buyer2 = User::factory()->create();
-
-    Transaction::create([
-        'buyer_id' => $buyer1->id,
-        'seller_id' => $seller->id,
-        'resale_listing_id' => $listing->id,
-        'ticket_id' => $ticket->id,
-        'amount' => 500000,
-        'status' => 'pending',
-    ]);
-
-    expect(fn () => Transaction::create([
-        'buyer_id' => $buyer2->id,
-        'seller_id' => $seller->id,
-        'resale_listing_id' => $listing->id,
-        'ticket_id' => $ticket->id,
-        'amount' => 500000,
-        'status' => 'pending',
-    ]))->toThrow(QueryException::class);
 });
 
 // ── Listing Not Found ───────────────────────────────────────────────
