@@ -25,6 +25,9 @@ class ResaleListing extends Model
         'hard_cap_price',
         'verification_status',
         'listing_status',
+        'verified_at',
+        'verified_by',
+        'rejection_reason',
         'listed_at',
         'sold_at',
     ];
@@ -41,6 +44,7 @@ class ResaleListing extends Model
             'current_asking_price' => 'decimal:2',
             'floor_price' => 'decimal:2',
             'hard_cap_price' => 'decimal:2',
+            'verified_at' => 'datetime',
             'listed_at' => 'datetime',
             'sold_at' => 'datetime',
         ];
@@ -60,5 +64,13 @@ class ResaleListing extends Model
     public function seller(): BelongsTo
     {
         return $this->belongsTo(User::class, 'seller_id');
+    }
+
+    /**
+     * Get the admin who verified or rejected this listing.
+     */
+    public function verifiedByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }
