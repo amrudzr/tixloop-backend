@@ -26,4 +26,24 @@ class EventFactory extends Factory
             'event_poster_url' => 'https://picsum.photos/400/600',
         ];
     }
+
+    /**
+     * Indicate that the event is expired.
+     */
+    public function expired(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'event_datetime' => now()->subDays(2),
+        ]);
+    }
+
+    /**
+     * Indicate that the event is upcoming.
+     */
+    public function upcoming(int $hours): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'event_datetime' => now()->addHours($hours),
+        ]);
+    }
 }

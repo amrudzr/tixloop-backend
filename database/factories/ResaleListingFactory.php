@@ -63,4 +63,18 @@ class ResaleListingFactory extends Factory
             'rejection_reason' => 'Ticket proof is unreadable or forged.',
         ]);
     }
+
+    /**
+     * Indicate that the listing is pending.
+     */
+    public function pending(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'verification_status' => 'pending',
+            'listing_status' => 'ditangguhkan',
+            'verified_at' => null,
+            'verified_by' => null,
+            'rejection_reason' => null,
+        ]);
+    }
 }

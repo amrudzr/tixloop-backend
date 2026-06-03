@@ -72,4 +72,18 @@ class TransactionFactory extends Factory
             'paid_at' => now(),
         ]);
     }
+
+    /**
+     * Indicate that the transaction is pending.
+     */
+    public function pending(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'pending',
+            'escrow_status' => null,
+            'paid_at' => null,
+            'released_at' => null,
+            'completed_at' => null,
+        ]);
+    }
 }
