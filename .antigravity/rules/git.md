@@ -1,0 +1,5 @@
+- feature branch naming
+- commit convention
+- no direct push to main
+- squash before merge
+- generate changelog summary

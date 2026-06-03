@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('resale_listings', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('event_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('ticket_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('seller_id')->constrained('users')->cascadeOnDelete();
-            $table->string('ticket_type');
-            $table->string('seat_number')->nullable();
             $table->decimal('original_price', 12, 2);
-            $table->decimal('current_price', 12, 2);
+            $table->decimal('current_asking_price', 12, 2);
             $table->decimal('floor_price', 12, 2);
-            $table->boolean('burn_prevention_active')->default(true);
-            $table->timestamp('last_price_drop_at')->nullable();
-            $table->boolean('verified_seller')->default(false);
+            $table->decimal('hard_cap_price', 12, 2);
+            $table->string('verification_status')->default('pending');
+            $table->string('listing_status')->default('aktif');
+            $table->timestamp('listed_at')->nullable();
+            $table->timestamp('sold_at')->nullable();
             $table->timestamps();
         });
     }

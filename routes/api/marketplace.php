@@ -1,21 +1,15 @@
 <?php
 
+use App\Http\Controllers\Api\ResaleListingController;
+use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Marketplace\ListingController;
 
-Route::prefix('marketplace')->group(function () {
+// Public browsing routes (no authentication required)
+Route::get('/marketplace/listings', [ResaleListingController::class, 'index']);
+Route::get('/marketplace/listings/{id}', [ResaleListingController::class, 'show']);
 
-    Route::get('/listings', [ListingController::class, 'index']);
-    Route::get('/listings/{listing}', [ListingController::class, 'show']);
-
-    Route::middleware('auth:sanctum')->group(function () {
-
-        Route::post('/listings', [ListingController::class, 'store']);
-
-        Route::put('/listings/{listing}', [ListingController::class, 'update']);
-
-        Route::delete('/listings/{listing}', [ListingController::class, 'destroy']);
-
-    });
-
+// Protected seller routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/marketplace/listings', [ResaleListingController::class, 'store']);
+    Route::post('/marketplace/listings/{id}/checkout', [TransactionController::class, 'checkout']);
 });

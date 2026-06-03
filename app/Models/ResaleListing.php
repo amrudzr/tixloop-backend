@@ -2,33 +2,84 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ResaleListing extends Model
 {
-    use HasUlids;
+    use HasFactory, HasUlids;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'event_id',
+        'ticket_id',
         'seller_id',
-        'ticket_type',
-        'seat_number',
         'original_price',
-        'current_price',
+        'current_asking_price',
         'floor_price',
-        'burn_prevention_active',
-        'last_price_drop_at',
-        'verified_seller',
+        'hard_cap_price',
+        'verification_status',
+        'listing_status',
+        'verified_at',
+        'verified_by',
+        'rejection_reason',
+        'listed_at',
+        'sold_at',
     ];
 
-    public function event()
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        return $this->belongsTo(Event::class);
+        return [
+            'original_price' => 'decimal:2',
+            'current_asking_price' => 'decimal:2',
+            'floor_price' => 'decimal:2',
+            'hard_cap_price' => 'decimal:2',
+            'verified_at' => 'datetime',
+            'listed_at' => 'datetime',
+            'sold_at' => 'datetime',
+        ];
     }
 
-    public function seller()
+    /**
+     * Get the ticket being listed for resale.
+     */
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(Ticket::class);
+    }
+
+    /**
+     * Get the seller of this listing.
+     */
+    public function seller(): BelongsTo
     {
         return $this->belongsTo(User::class, 'seller_id');
+    }
+
+    /**
+     * Get the admin who verified or rejected this listing.
+     */
+    public function verifiedByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
+     * Get the transactions for this listing.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 }

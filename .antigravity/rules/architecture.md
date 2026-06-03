@@ -1,0 +1,6 @@
+- thin controller
+- business logic only in services
+- repository pattern if query complexity grows
+- avoid duplicated logic
+- DTO/resource required
+- feature-based structure preferred
