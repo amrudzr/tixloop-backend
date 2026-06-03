@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ResaleListing;
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -14,6 +15,29 @@ class ResaleListingService
     private const MARKUP_CAP = 1.15;
 
     private const FLOOR_RATIO = 0.45;
+
+    /**
+     * Browse marketplace listings with filtering and pagination.
+     */
+    public function browseListings(?string $search, int $perPage): LengthAwarePaginator
+    {
+        $perPage = min($perPage, 50);
+
+        $query = ResaleListing::with(['ticket.event', 'seller'])
+            ->where('listing_status', 'aktif')
+            ->where('verification_status', 'verified');
+
+        if ($search) {
+            $query->whereHas('ticket.event', function ($q) use ($search) {
+                $q->where('event_name', 'like', '%'.$search.'%')
+                    ->orWhere('venue_name', 'like', '%'.$search.'%')
+                    ->orWhere('city', 'like', '%'.$search.'%')
+                    ->orWhere('event_category', 'like', '%'.$search.'%');
+            });
+        }
+
+        return $query->latest('listed_at')->paginate($perPage);
+    }
 
     /**
      * Create a marketplace listing for an existing ticket.
