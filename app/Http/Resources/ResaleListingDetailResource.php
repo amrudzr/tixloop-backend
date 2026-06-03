@@ -30,7 +30,7 @@ class ResaleListingDetailResource extends JsonResource
                     'category' => $this->ticket->event->event_category,
                     'venue' => $this->ticket->event->venue_name,
                     'city' => $this->ticket->event->city,
-                    'date' => $this->ticket->event->event_date,
+                    'date' => $this->ticket->event->event_datetime,
                 ],
                 'metadata' => $this->ticket->ticket_metadata,
             ],
