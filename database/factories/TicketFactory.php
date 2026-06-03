@@ -56,4 +56,36 @@ class TicketFactory extends Factory
             'ticket_metadata' => ['original_price' => $price],
         ]);
     }
+
+    /**
+     * Indicate that the ticket is active.
+     */
+    public function aktif(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'aktif',
+        ]);
+    }
+
+    /**
+     * Indicate that the ticket has been used.
+     */
+    public function digunakan(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'digunakan',
+            'used_at' => now(),
+        ]);
+    }
+
+    /**
+     * Indicate that the ticket is expired/burned.
+     */
+    public function hangus(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'hangus',
+            'burned_at' => now(),
+        ]);
+    }
 }

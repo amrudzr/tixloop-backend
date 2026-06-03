@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             EventSeeder::class,
             UserSeeder::class,
+            DemoSeeder::class,
         ]);
     }
 }

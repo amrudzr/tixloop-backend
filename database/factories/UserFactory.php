@@ -43,4 +43,34 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Indicate that the user has the admin role.
+     */
+    public function admin(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('admin');
+        });
+    }
+
+    /**
+     * Indicate that the user has the seller role.
+     */
+    public function seller(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('seller');
+        });
+    }
+
+    /**
+     * Indicate that the user has the buyer role.
+     */
+    public function buyer(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('buyer');
+        });
+    }
 }
