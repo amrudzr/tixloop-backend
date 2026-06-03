@@ -10,6 +10,7 @@ use App\Models\Ticket;
 use App\Services\TicketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
 {
@@ -22,7 +23,14 @@ class TicketController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        Gate::authorize('viewAny', Ticket::class);
+
+        $user = $request->user();
         $query = Ticket::query()->with(['event', 'currentOwner']);
+
+        if (! $user->hasRole('admin')) {
+            $query->where('current_owner_id', $user->id);
+        }
 
         // Filter: search (nama event, venue, kota)
         if ($request->filled('search')) {
@@ -57,6 +65,8 @@ class TicketController extends Controller
     public function show(string $id): JsonResponse
     {
         $ticket = Ticket::with(['event', 'currentOwner'])->findOrFail($id);
+
+        Gate::authorize('view', $ticket);
 
         return ApiResponse::success(
             new TicketResource($ticket),

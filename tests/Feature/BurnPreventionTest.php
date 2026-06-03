@@ -345,3 +345,57 @@ test('pending high-risk listings counted in dashboard metrics', function () {
         ->assertJsonPath('data.summary.high_risk_count', 1)
         ->assertJsonPath('data.summary.total_value_at_risk', 55000);
 });
+
+test('guest request returns public metrics with empty user_listings_at_risk', function () {
+    $response = $this->getJson('/api/v1/dashboard/burn-prevention');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('data.user_listings_at_risk', []);
+});
+
+test('authenticated seller receives their own listings at risk in user_listings_at_risk', function () {
+    $seller = User::factory()->create();
+
+    // Create an at-risk listing for this seller (event in 12 hours)
+    $event = Event::factory()->create(['event_datetime' => now()->addHours(12)]);
+    $ticket = Ticket::factory()->create([
+        'event_id' => $event->id,
+        'current_owner_id' => $seller->id,
+        'status' => 'aktif',
+    ]);
+    $listing = ResaleListing::factory()->create([
+        'ticket_id' => $ticket->id,
+        'seller_id' => $seller->id,
+        'current_asking_price' => 80000,
+        'floor_price' => 45000,
+        'verification_status' => 'verified',
+        'listing_status' => 'aktif',
+    ]);
+
+    // Create an at-risk listing for another seller
+    $otherSeller = User::factory()->create();
+    $otherEvent = Event::factory()->create(['event_datetime' => now()->addHours(12)]);
+    $otherTicket = Ticket::factory()->create([
+        'event_id' => $otherEvent->id,
+        'current_owner_id' => $otherSeller->id,
+        'status' => 'aktif',
+    ]);
+    ResaleListing::factory()->create([
+        'ticket_id' => $otherTicket->id,
+        'seller_id' => $otherSeller->id,
+        'current_asking_price' => 90000,
+        'floor_price' => 45000,
+        'verification_status' => 'verified',
+        'listing_status' => 'aktif',
+    ]);
+
+    $response = $this->actingAs($seller, 'sanctum')->getJson('/api/v1/dashboard/burn-prevention');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('success', true);
+
+    $userListings = $response->json('data.user_listings_at_risk');
+    expect($userListings)->toHaveCount(1);
+    expect($userListings[0]['listing_id'])->toBe($listing->id);
+});
