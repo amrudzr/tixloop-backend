@@ -29,3 +29,4 @@ Thumbs.db
 .junie/
 .antigravity/logs/
 .antigravity/tmp/
+/database/*.sqlite
