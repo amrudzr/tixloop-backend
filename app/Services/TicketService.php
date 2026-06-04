@@ -21,7 +21,8 @@ class TicketService
         ?UploadedFile $physicalPhoto = null,
     ): Ticket {
         return DB::transaction(function () use ($user, $data, $ticketProof, $physicalPhoto) {
-            $proofPath = $ticketProof->store('ticket_proofs', 'local');
+            $disk = config('filesystems.tickets_disk', 'local');
+            $proofPath = $ticketProof->store('ticket_proofs', $disk);
             $proofType = $ticketProof->getClientMimeType();
 
             $metadata = [
@@ -29,7 +30,7 @@ class TicketService
             ];
 
             if ($physicalPhoto) {
-                $physicalPath = $physicalPhoto->store('ticket_proofs', 'local');
+                $physicalPath = $physicalPhoto->store('ticket_proofs', $disk);
                 $metadata['physical_photo_path'] = $physicalPath;
             }
 

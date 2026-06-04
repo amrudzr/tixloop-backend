@@ -125,3 +125,28 @@ test('ticket upload rejects oversized file', function () {
 
     $response->assertStatus(422)->assertJsonValidationErrors(['ticket_proof']);
 });
+
+test('ticket upload stores proof on configurable disk', function () {
+    Storage::fake('public');
+    config(['filesystems.tickets_disk' => 'public']);
+
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+    $file = UploadedFile::fake()->create('proof.pdf', 500, 'application/pdf');
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/tickets/upload', [
+            'event_id' => $event->id,
+            'ticket_code' => 'TIX-0006-XYZ',
+            'seat_number' => 'B-2',
+            'original_price' => 600000,
+            'ticket_proof' => $file,
+        ]);
+
+    $response->assertStatus(201);
+
+    $ticket = Ticket::where('ticket_code', 'TIX-0006-XYZ')->first();
+    expect($ticket->ticket_proof_path)->not->toBeNull();
+    Storage::disk('public')->assertExists($ticket->ticket_proof_path);
+    Storage::disk('local')->assertMissing($ticket->ticket_proof_path);
+});
