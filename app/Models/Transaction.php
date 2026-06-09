@@ -29,6 +29,7 @@ class Transaction extends Model
         'payment_reference',
         'paid_at',
         'released_at',
+        'released_by',
         'completed_at',
     ];
 

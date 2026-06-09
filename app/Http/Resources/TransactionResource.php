@@ -27,6 +27,7 @@ class TransactionResource extends JsonResource
             'payment_reference' => $this->payment_reference,
             'paid_at' => $this->paid_at,
             'released_at' => $this->released_at,
+            'released_by' => $this->released_by,
             'completed_at' => $this->completed_at,
             'ticket' => [
                 'id' => $this->ticket->id,

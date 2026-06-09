@@ -8,6 +8,7 @@ use App\Http\Resources\TransactionResource;
 use App\Models\ResaleListing;
 use App\Models\Transaction;
 use App\Services\CheckoutService;
+use App\Services\EscrowService;
 use App\Services\OwnershipTransferService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class TransactionController extends Controller
     public function __construct(
         private CheckoutService $checkoutService,
         private OwnershipTransferService $ownershipTransferService,
+        private EscrowService $escrowService,
     ) {}
 
     /**
@@ -42,7 +44,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * Simulate payment success and transfer ownership.
+     * Simulate payment and hold escrow (Phase 1).
      */
     public function simulatePayment(Request $request, string $id): JsonResponse
     {
@@ -50,13 +52,33 @@ class TransactionController extends Controller
 
         Gate::authorize('simulatePayment', $transaction);
 
-        $transaction = $this->ownershipTransferService->simulatePaymentAndTransfer($transaction);
+        $transaction = $this->ownershipTransferService->simulatePayment($transaction);
 
         $transaction->load(['buyer', 'seller', 'ticket']);
 
         return ApiResponse::success(
             new TransactionResource($transaction),
-            'Payment simulation successful. Ownership transferred.',
+            'Payment simulation successful. Escrow held.',
+            200
+        );
+    }
+
+    /**
+     * Release escrow and transfer ownership (Phase 2).
+     */
+    public function releaseEscrow(Request $request, string $id): JsonResponse
+    {
+        $transaction = Transaction::with(['ticket', 'resaleListing'])->findOrFail($id);
+
+        Gate::authorize('releaseEscrow', $transaction);
+
+        $transaction = $this->escrowService->releaseEscrow($transaction, $request->user());
+
+        $transaction->load(['buyer', 'seller', 'ticket']);
+
+        return ApiResponse::success(
+            new TransactionResource($transaction),
+            'Escrow released. Ownership transferred.',
             200
         );
     }
