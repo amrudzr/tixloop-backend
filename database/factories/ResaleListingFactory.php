@@ -58,9 +58,23 @@ class ResaleListingFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'verification_status' => 'rejected',
-            'listing_status' => 'ditangguhkan',
+            'listing_status' => 'ditolak',
             'verified_by' => User::factory(),
             'rejection_reason' => 'Ticket proof is unreadable or forged.',
+        ]);
+    }
+
+    /**
+     * Indicate that the listing is sold.
+     */
+    public function sold(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'verification_status' => 'verified',
+            'listing_status' => 'terjual',
+            'verified_at' => now(),
+            'verified_by' => User::factory(),
+            'sold_at' => now(),
         ]);
     }
 

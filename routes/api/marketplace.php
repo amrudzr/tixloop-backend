@@ -10,6 +10,7 @@ Route::get('/marketplace/listings/{id}', [ResaleListingController::class, 'show'
 
 // Protected seller routes
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/marketplace/my-listings', [ResaleListingController::class, 'sellerListings']);
     Route::post('/marketplace/listings', [ResaleListingController::class, 'store']);
     Route::post('/marketplace/listings/{id}/checkout', [TransactionController::class, 'checkout']);
 });

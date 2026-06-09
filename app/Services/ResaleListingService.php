@@ -17,6 +17,23 @@ class ResaleListingService
     private const FLOOR_RATIO = 0.45;
 
     /**
+     * Retrieve listings owned by the given seller with optional status filter.
+     */
+    public function getSellerListings(User $seller, ?string $status, int $perPage): LengthAwarePaginator
+    {
+        $perPage = min($perPage, 50);
+
+        $query = ResaleListing::with(['ticket.event'])
+            ->where('seller_id', $seller->id);
+
+        if ($status) {
+            $query->where('listing_status', $status);
+        }
+
+        return $query->latest()->paginate($perPage);
+    }
+
+    /**
      * Browse marketplace listings with filtering and pagination.
      */
     public function browseListings(?string $search, int $perPage): LengthAwarePaginator
