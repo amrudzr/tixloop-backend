@@ -1,0 +1,123 @@
+{#2771
+  +"success": true
+  +"message": "Transaction history retrieved successfully"
+  +"data": {#3218
+    +"data": array:1 [
+      0 => {#3210
+        +"id": "01ktq7y47zj7kh2ep1sky3da10"
+        +"buyer": {#3212
+          +"id": "01ktq7y47fvea57c68e12w32nf"
+          +"name": "Maegan Funk"
+        }
+        +"seller": {#3219
+          +"id": "01ktq7y47ktmwb5txzxdgnmrf4"
+          +"name": "Jazmyne Armstrong"
+        }
+        +"resale_listing_id": "01ktq7y47wc3j6xp1pnm4b7b3n"
+        +"ticket_id": "01ktq7y47rc0z1f0t8g3y9atdk"
+        +"amount": "764551.78"
+        +"service_fee": "0.00"
+        +"status": "pending"
+        +"escrow_status": null
+        +"payment_reference": null
+        +"paid_at": null
+        +"released_at": null
+        +"released_by": null
+        +"completed_at": null
+        +"ticket": {#3211
+          +"id": "01ktq7y47rc0z1f0t8g3y9atdk"
+          +"current_owner_id": "01ktq7y47qq6rfnwz0mbsg5e0v"
+          +"event": {#3209
+            +"id": "01ktq7y47nee3yqgh3a2dk45yx"
+            +"event_name": "laborum tempore et Concert"
+            +"event_category": "Theatre"
+            +"event_datetime": "2026-08-03T15:48:37.000000Z"
+            +"venue_name": "Davis Ltd Arena"
+            +"city": "West Judgetown"
+            +"event_poster_url": "https://picsum.photos/400/600"
+          }
+        }
+        +"created_at": "2026-06-09T22:27:03.000000Z"
+        +"updated_at": "2026-06-09T22:27:03.000000Z"
+      }
+    ]
+    +"links": {#2769
+      +"first": "http://localhost:8000/api/v1/transactions?page=1"
+      +"last": "http://localhost:8000/api/v1/transactions?page=1"
+      +"prev": null
+      +"next": null
+    }
+    +"meta": {#994
+      +"current_page": 1
+      +"from": 1
+      +"last_page": 1
+      +"links": array:3 [
+        0 => {#3234
+          +"url": null
+          +"label": "&laquo; Previous"
+          +"page": null
+          +"active": false
+        }
+        1 => {#464
+          +"url": "http://localhost:8000/api/v1/transactions?page=1"
+          +"label": "1"
+          +"page": 1
+          +"active": true
+        }
+        2 => {#3227
+          +"url": null
+          +"label": "Next &raquo;"
+          +"page": null
+          +"active": false
+        }
+      ]
+      +"path": "http://localhost:8000/api/v1/transactions"
+      +"per_page": 15
+      +"to": 1
+      +"total": 1
+    }
+  }
+} // vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:1895
+{#3504
+  +"success": true
+  +"message": "Transaction history retrieved successfully"
+  +"data": {#3377
+    +"data": []
+    +"links": {#3382
+      +"first": "http://localhost:8000/api/v1/transactions?page=1"
+      +"last": "http://localhost:8000/api/v1/transactions?page=1"
+      +"prev": null
+      +"next": null
+    }
+    +"meta": {#3449
+      +"current_page": 1
+      +"from": null
+      +"last_page": 1
+      +"links": array:3 [
+        0 => {#3376
+          +"url": null
+          +"label": "&laquo; Previous"
+          +"page": null
+          +"active": false
+        }
+        1 => {#3381
+          +"url": "http://localhost:8000/api/v1/transactions?page=1"
+          +"label": "1"
+          +"page": 1
+          +"active": true
+        }
+        2 => {#3378
+          +"url": null
+          +"label": "Next &raquo;"
+          +"page": null
+          +"active": false
+        }
+      ]
+      +"path": "http://localhost:8000/api/v1/transactions"
+      +"per_page": 15
+      +"to": null
+      +"total": 0
+    }
+  }
+} // vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:1895
+{"tool":"pest","result":"failed","tests":3,"passed":1,"assertions":5,"duration_ms":1043,"failed":2,"failures":[{"test":"P\\Tests\\Feature\\TransactionHistoryTest::__pest_evaluable_it_returns_transaction_history_for_logged_in_user","file":"\\projects\\laravel\\tixloop-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Testing\\AssertableJsonString.php","line":243,"message":"Failed asserting that null is identical to '01ktq7y47zj7kh2ep1sky3da10'."},{"test":"P\\Tests\\Feature\\TransactionHistoryTest::__pest_evaluable_it_does_not_return_transactions_of_other_users","file":"\\projects\\laravel\\tixloop-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Testing\\AssertableJsonString.php","line":74,"message":"Failed to assert that the response count matched the expected 0\nFailed asserting that actual size 3 matches expected size 0."}]}
