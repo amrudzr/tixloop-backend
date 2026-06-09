@@ -9,16 +9,42 @@ use App\Http\Requests\StoreListingRequest;
 use App\Http\Resources\ResaleListingDetailResource;
 use App\Http\Resources\ResaleListingIndexResource;
 use App\Http\Resources\ResaleListingResource;
+use App\Http\Resources\SellerListingResource;
 use App\Models\ResaleListing;
 use App\Models\Ticket;
 use App\Services\ResaleListingService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ResaleListingController extends Controller
 {
     public function __construct(
         private ResaleListingService $resaleListingService,
     ) {}
+
+    /**
+     * List authenticated seller's own listings.
+     */
+    public function sellerListings(Request $request): JsonResponse
+    {
+        $listings = $this->resaleListingService->getSellerListings(
+            seller: $request->user(),
+            status: $request->query('status'),
+            perPage: (int) ($request->query('per_page', 15))
+        );
+
+        return ApiResponse::success(
+            SellerListingResource::collection($listings),
+            'Seller listings retrieved successfully',
+            200,
+            [
+                'current_page' => $listings->currentPage(),
+                'last_page' => $listings->lastPage(),
+                'per_page' => $listings->perPage(),
+                'total' => $listings->total(),
+            ]
+        );
+    }
 
     /**
      * Browse marketplace listings.
