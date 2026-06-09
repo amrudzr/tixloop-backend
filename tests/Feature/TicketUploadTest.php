@@ -150,3 +150,64 @@ test('ticket upload stores proof on configurable disk', function () {
     Storage::disk('public')->assertExists($ticket->ticket_proof_path);
     Storage::disk('local')->assertMissing($ticket->ticket_proof_path);
 });
+
+test('ticket upload stores ticket_type in metadata when provided', function () {
+    Storage::fake('local');
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+    $file = UploadedFile::fake()->create('proof.pdf', 500, 'application/pdf');
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/tickets/upload', [
+            'event_id' => $event->id,
+            'ticket_code' => 'TIX-TYPE-001',
+            'original_price' => 500000,
+            'ticket_proof' => $file,
+            'ticket_type' => 'VIP',
+        ]);
+
+    $response->assertStatus(201);
+
+    $ticket = Ticket::where('ticket_code', 'TIX-TYPE-001')->first();
+    expect($ticket->ticket_metadata['type'])->toBe('VIP');
+    expect($ticket->ticket_metadata['original_price'])->toEqual(500000);
+});
+
+test('ticket upload works without ticket_type (backward compatible)', function () {
+    Storage::fake('local');
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+    $file = UploadedFile::fake()->create('proof.pdf', 500, 'application/pdf');
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/tickets/upload', [
+            'event_id' => $event->id,
+            'ticket_code' => 'TIX-NOMOD-001',
+            'original_price' => 350000,
+            'ticket_proof' => $file,
+        ]);
+
+    $response->assertStatus(201);
+
+    $ticket = Ticket::where('ticket_code', 'TIX-NOMOD-001')->first();
+    expect($ticket->ticket_metadata)->not->toHaveKey('type');
+    expect($ticket->ticket_metadata['original_price'])->toEqual(350000);
+});
+
+test('ticket upload rejects ticket_type exceeding max length', function () {
+    Storage::fake('local');
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+    $file = UploadedFile::fake()->create('proof.pdf', 500, 'application/pdf');
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/tickets/upload', [
+            'event_id' => $event->id,
+            'ticket_code' => 'TIX-LONG-001',
+            'original_price' => 500000,
+            'ticket_proof' => $file,
+            'ticket_type' => str_repeat('X', 51),
+        ]);
+
+    $response->assertStatus(422)->assertJsonValidationErrors(['ticket_type']);
+});

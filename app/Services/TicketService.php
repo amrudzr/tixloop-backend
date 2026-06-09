@@ -12,7 +12,7 @@ class TicketService
     /**
      * Upload a ticket with proof file and optional physical photo.
      *
-     * @param  array{event_id: string, ticket_code: string, seat_number: ?string, original_price: float}  $data
+     * @param  array{event_id: string, ticket_code: string, seat_number: ?string, original_price: float, ticket_type: ?string}  $data
      */
     public function uploadTicket(
         User $user,
@@ -28,6 +28,10 @@ class TicketService
             $metadata = [
                 'original_price' => (float) $data['original_price'],
             ];
+
+            if (! empty($data['ticket_type'])) {
+                $metadata['type'] = $data['ticket_type'];
+            }
 
             if ($physicalPhoto) {
                 $physicalPath = $physicalPhoto->store('ticket_proofs', $disk);
