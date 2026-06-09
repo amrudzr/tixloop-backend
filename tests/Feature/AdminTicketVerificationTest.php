@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Event;
 use App\Models\ResaleListing;
 use App\Models\Ticket;
 use App\Models\User;
@@ -256,13 +257,13 @@ test('admin can reject a pending listing with reason', function () {
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.verification_status', 'rejected')
-        ->assertJsonPath('data.listing_status', 'ditangguhkan')
+        ->assertJsonPath('data.listing_status', 'ditolak')
         ->assertJsonPath('data.rejection_reason', $reason)
         ->assertJsonPath('message', 'Listing rejected successfully');
 
     $listing->refresh();
     expect($listing->verification_status)->toBe('rejected');
-    expect($listing->listing_status)->toBe('ditangguhkan');
+    expect($listing->listing_status)->toBe('ditolak');
     expect($listing->verified_by)->toBe($admin->id);
     expect($listing->rejection_reason)->toBe($reason);
 });
@@ -353,4 +354,40 @@ test('non-admin cannot reject a listing', function () {
         ]);
 
     $response->assertStatus(403);
+});
+
+// ── Re-listing After Rejection ──────────────────────────────────────
+
+test('seller can create new listing after previous listing was rejected', function () {
+    $user = User::factory()->create();
+    $event = Event::factory()->create();
+    $ticket = Ticket::factory()
+        ->withOriginalPrice(500000)
+        ->create([
+            'event_id' => $event->id,
+            'current_owner_id' => $user->id,
+            'status' => 'aktif',
+        ]);
+
+    // Simulate a rejected listing (listing_status = ditolak)
+    ResaleListing::factory()->create([
+        'ticket_id' => $ticket->id,
+        'seller_id' => $user->id,
+        'verification_status' => 'rejected',
+        'listing_status' => 'ditolak',
+        'rejection_reason' => 'Blurry proof image.',
+    ]);
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/marketplace/listings', [
+            'ticket_id' => $ticket->id,
+            'current_asking_price' => 500000,
+        ]);
+
+    $response->assertStatus(201)
+        ->assertJsonPath('data.verification_status', 'pending')
+        ->assertJsonPath('data.listing_status', 'ditangguhkan');
+
+    // Two listings should exist for same ticket
+    expect(ResaleListing::where('ticket_id', $ticket->id)->count())->toBe(2);
 });
