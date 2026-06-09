@@ -29,6 +29,10 @@ class TicketResource extends JsonResource
                 $this->ticket_proof_path
             ),
             'ticket_proof_type' => $this->ticket_proof_type,
+            'ticket_metadata' => $this->when(
+                $request->user() && ($request->user()->id === $this->current_owner_id || $request->user()->hasRole('admin')),
+                $this->ticket_metadata
+            ),
             'proof_uploaded_at' => $this->proof_uploaded_at,
             'status' => $this->status,
             'created_at' => $this->created_at,
