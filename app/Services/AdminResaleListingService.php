@@ -71,7 +71,7 @@ class AdminResaleListingService
         return DB::transaction(function () use ($listing, $admin, $reason) {
             $listing->update([
                 'verification_status' => 'rejected',
-                'listing_status' => 'ditangguhkan',
+                'listing_status' => 'ditolak',
                 'verified_at' => null,
                 'verified_by' => $admin->id,
                 'rejection_reason' => $reason,
