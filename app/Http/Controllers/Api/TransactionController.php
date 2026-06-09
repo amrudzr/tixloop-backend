@@ -23,6 +23,30 @@ class TransactionController extends Controller
     ) {}
 
     /**
+     * Get transaction history for the logged-in user.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $transactions = Transaction::with([
+            'buyer',
+            'seller',
+            'ticket.event',
+        ])
+        ->where('buyer_id', $user->id)
+        ->orWhere('seller_id', $user->id)
+        ->orderBy('created_at', 'desc')
+        ->paginate(15);
+
+        return ApiResponse::success(
+            TransactionResource::collection($transactions)->response()->getData(true),
+            'Transaction history retrieved successfully',
+            200
+        );
+    }
+
+    /**
      * Initiate a checkout for a resale listing.
      */
     public function checkout(Request $request, string $id): JsonResponse

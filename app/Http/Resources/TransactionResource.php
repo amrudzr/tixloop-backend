@@ -29,10 +29,13 @@ class TransactionResource extends JsonResource
             'released_at' => $this->released_at,
             'released_by' => $this->released_by,
             'completed_at' => $this->completed_at,
-            'ticket' => [
-                'id' => $this->ticket->id,
-                'current_owner_id' => $this->ticket->current_owner_id,
-            ],
+            'ticket' => $this->whenLoaded('ticket', function () {
+                return [
+                    'id' => $this->ticket->id,
+                    'current_owner_id' => $this->ticket->current_owner_id,
+                    'event' => $this->ticket->relationLoaded('event') ? new EventResource($this->ticket->event) : null,
+                ];
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
