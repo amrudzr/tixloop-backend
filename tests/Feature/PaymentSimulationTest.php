@@ -2,7 +2,6 @@
 
 use App\Models\ResaleListing;
 use App\Models\Ticket;
-use App\Models\TicketOwnershipHistory;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -58,9 +57,9 @@ test('guest cannot simulate payment', function () {
     $response->assertStatus(401);
 });
 
-// ── Successful Payment Simulation ───────────────────────────────────
+// ── Successful Payment Simulation (Phase 1: Escrow Held) ───────────
 
-test('buyer can simulate payment and complete ownership transfer', function () {
+test('buyer can simulate payment and hold escrow', function () {
     ['transaction' => $transaction, 'buyer' => $buyer, 'seller' => $seller, 'ticket' => $ticket, 'listing' => $listing] = createPendingTransaction();
 
     $response = $this->actingAs($buyer, 'sanctum')
@@ -68,31 +67,32 @@ test('buyer can simulate payment and complete ownership transfer', function () {
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
-        ->assertJsonPath('data.status', 'completed')
-        ->assertJsonPath('data.escrow_status', 'released')
-        ->assertJsonPath('data.ticket.current_owner_id', $buyer->id);
+        ->assertJsonPath('data.status', 'paid')
+        ->assertJsonPath('data.escrow_status', 'held')
+        ->assertJsonPath('data.ticket.current_owner_id', $seller->id);
 
     $this->assertDatabaseHas('transactions', [
         'id' => $transaction->id,
-        'status' => 'completed',
-        'escrow_status' => 'released',
+        'status' => 'paid',
+        'escrow_status' => 'held',
     ]);
 
+    // Ownership NOT transferred during payment phase
     $this->assertDatabaseHas('tickets', [
         'id' => $ticket->id,
-        'current_owner_id' => $buyer->id,
+        'current_owner_id' => $seller->id,
+        'status' => 'dalam_escrow',
     ]);
 
+    // Listing still aktif during payment phase
     $this->assertDatabaseHas('resale_listings', [
         'id' => $listing->id,
-        'listing_status' => 'terjual',
+        'listing_status' => 'aktif',
     ]);
 
-    $this->assertDatabaseHas('ticket_ownership_history', [
+    // No ownership history created during payment
+    $this->assertDatabaseMissing('ticket_ownership_history', [
         'ticket_id' => $ticket->id,
-        'transaction_id' => $transaction->id,
-        'previous_owner_id' => $seller->id,
-        'new_owner_id' => $buyer->id,
     ]);
 });
 
@@ -119,7 +119,22 @@ test('unrelated user cannot simulate payment', function () {
 
 // ── Invalid Transaction State ───────────────────────────────────────
 
-test('cannot simulate payment for already completed transaction', function () {
+test('cannot simulate payment for already paid transaction', function () {
+    ['transaction' => $transaction, 'buyer' => $buyer] = createPendingTransaction();
+
+    $transaction->update([
+        'status' => 'paid',
+        'escrow_status' => 'held',
+        'paid_at' => now(),
+    ]);
+
+    $response = $this->actingAs($buyer, 'sanctum')
+        ->postJson("/api/v1/transactions/{$transaction->id}/simulate-payment");
+
+    $response->assertStatus(403);
+});
+
+test('cannot simulate payment for completed transaction', function () {
     ['transaction' => $transaction, 'buyer' => $buyer] = createPendingTransaction();
 
     $transaction->update([
@@ -196,22 +211,4 @@ test('guest cannot view transaction', function () {
     $response = $this->getJson("/api/v1/transactions/{$transaction->id}");
 
     $response->assertStatus(401);
-});
-
-// ── Audit Ledger Consistency ────────────────────────────────────────
-
-test('ownership history records correct transfer data after payment', function () {
-    ['transaction' => $transaction, 'buyer' => $buyer, 'seller' => $seller, 'ticket' => $ticket] = createPendingTransaction();
-
-    $this->actingAs($buyer, 'sanctum')
-        ->postJson("/api/v1/transactions/{$transaction->id}/simulate-payment")
-        ->assertStatus(200);
-
-    $history = TicketOwnershipHistory::where('ticket_id', $ticket->id)->first();
-
-    expect($history)->not->toBeNull();
-    expect($history->previous_owner_id)->toBe($seller->id);
-    expect($history->new_owner_id)->toBe($buyer->id);
-    expect($history->transaction_id)->toBe($transaction->id);
-    expect($history->transferred_at)->not->toBeNull();
 });

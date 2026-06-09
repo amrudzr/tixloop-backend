@@ -5,6 +5,7 @@ use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\CheckoutService;
+use App\Services\EscrowService;
 use App\Services\OwnershipTransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
@@ -78,20 +79,42 @@ test('checkout allowed after previous transaction failed', function () {
     expect($tx2->buyer_id)->toBe($buyer2->id);
 });
 
-// ── OwnershipTransferService Row Lock ───────────────────────────────
+// ── Two-Phase Escrow Flow ──────────────────────────────────────────
 
-test('ownership transfer locks transaction row before status assertion', function () {
+test('payment holds escrow and marks ticket dalam_escrow', function () {
     ['listing' => $listing, 'seller' => $seller, 'ticket' => $ticket] = createActiveListing();
     $buyer = User::factory()->create();
 
-    $service = app(CheckoutService::class);
-    $transaction = $service->initiateCheckout($buyer, $listing);
+    $checkoutService = app(CheckoutService::class);
+    $transaction = $checkoutService->initiateCheckout($buyer, $listing);
 
     $transferService = app(OwnershipTransferService::class);
-    $result = $transferService->simulatePaymentAndTransfer($transaction);
+    $result = $transferService->simulatePayment($transaction);
+
+    expect($result->status)->toBe('paid');
+    expect($result->escrow_status)->toBe('held');
+
+    $ticket->refresh();
+    expect($ticket->status)->toBe('dalam_escrow');
+    expect($ticket->current_owner_id)->toBe($seller->id);
+});
+
+test('escrow release transfers ownership and completes transaction', function () {
+    ['listing' => $listing, 'seller' => $seller, 'ticket' => $ticket] = createActiveListing();
+    $buyer = User::factory()->create();
+
+    $checkoutService = app(CheckoutService::class);
+    $transaction = $checkoutService->initiateCheckout($buyer, $listing);
+
+    $transferService = app(OwnershipTransferService::class);
+    $transaction = $transferService->simulatePayment($transaction);
+
+    $escrowService = app(EscrowService::class);
+    $result = $escrowService->releaseEscrow($transaction, $buyer);
 
     expect($result->status)->toBe('completed');
     expect($result->escrow_status)->toBe('released');
+    expect($result->released_by)->toBe($buyer->id);
     expect($result->ticket->current_owner_id)->toBe($buyer->id);
 });
 
@@ -105,11 +128,11 @@ test('ownership transfer rejects non-pending transaction', function () {
 
     $transferService = app(OwnershipTransferService::class);
 
-    expect(fn () => $transferService->simulatePaymentAndTransfer($transaction))
+    expect(fn () => $transferService->simulatePayment($transaction))
         ->toThrow(ValidationException::class);
 });
 
-test('listing marked as terjual after successful transfer', function () {
+test('listing marked as terjual after escrow release', function () {
     ['listing' => $listing, 'seller' => $seller, 'ticket' => $ticket] = createActiveListing();
     $buyer = User::factory()->create();
 
@@ -117,14 +140,17 @@ test('listing marked as terjual after successful transfer', function () {
     $transaction = $checkoutService->initiateCheckout($buyer, $listing);
 
     $transferService = app(OwnershipTransferService::class);
-    $transferService->simulatePaymentAndTransfer($transaction);
+    $transaction = $transferService->simulatePayment($transaction);
+
+    $escrowService = app(EscrowService::class);
+    $escrowService->releaseEscrow($transaction, $buyer);
 
     $listing->refresh();
     expect($listing->listing_status)->toBe('terjual');
     expect($listing->sold_at)->not->toBeNull();
 });
 
-test('second buyer cannot checkout after transfer completes', function () {
+test('second buyer cannot checkout after payment holds escrow', function () {
     ['listing' => $listing, 'seller' => $seller, 'ticket' => $ticket] = createActiveListing();
     $buyer1 = User::factory()->create();
     $buyer2 = User::factory()->create();
@@ -133,28 +159,31 @@ test('second buyer cannot checkout after transfer completes', function () {
     $transaction = $checkoutService->initiateCheckout($buyer1, $listing);
 
     $transferService = app(OwnershipTransferService::class);
-    $transferService->simulatePaymentAndTransfer($transaction);
+    $transferService->simulatePayment($transaction);
 
     expect(fn () => $checkoutService->initiateCheckout($buyer2, $listing))
         ->toThrow(ValidationException::class);
 });
 
-// ── Full Purchase Flow Atomicity ────────────────────────────────────
+// ── Full Two-Phase Flow Atomicity ──────────────────────────────────
 
-test('full purchase flow is atomic: checkout then transfer', function () {
+test('full two-phase escrow flow is atomic: checkout then payment then release', function () {
     ['listing' => $listing, 'seller' => $seller, 'ticket' => $ticket] = createActiveListing();
     $buyer = User::factory()->create();
 
     $checkoutService = app(CheckoutService::class);
     $transferService = app(OwnershipTransferService::class);
+    $escrowService = app(EscrowService::class);
 
     $transaction = $checkoutService->initiateCheckout($buyer, $listing);
-    $result = $transferService->simulatePaymentAndTransfer($transaction);
+    $transaction = $transferService->simulatePayment($transaction);
+    $result = $escrowService->releaseEscrow($transaction, $buyer);
 
     expect($result->status)->toBe('completed');
 
     $ticket->refresh();
     expect($ticket->current_owner_id)->toBe($buyer->id);
+    expect($ticket->status)->toBe('terjual');
 
     $listing->refresh();
     expect($listing->listing_status)->toBe('terjual');
