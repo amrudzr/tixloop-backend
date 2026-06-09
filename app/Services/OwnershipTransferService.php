@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\ResaleListing;
+use App\Models\Ticket;
 use App\Models\TicketOwnershipHistory;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
@@ -23,16 +25,22 @@ class OwnershipTransferService
      */
     public function simulatePaymentAndTransfer(Transaction $transaction): Transaction
     {
-        $this->assertTransactionIsPending($transaction);
-
         return DB::transaction(function () use ($transaction) {
+            $transaction = Transaction::where('id', $transaction->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $this->assertTransactionIsPending($transaction);
+
             $transaction->update([
                 'status' => 'paid',
                 'escrow_status' => 'held',
                 'paid_at' => now(),
             ]);
 
-            $ticket = $transaction->ticket;
+            $ticket = Ticket::where('id', $transaction->ticket_id)
+                ->lockForUpdate()
+                ->firstOrFail();
             $previousOwnerId = $ticket->current_owner_id;
 
             $ticket->update([
@@ -47,7 +55,11 @@ class OwnershipTransferService
                 'transferred_at' => now(),
             ]);
 
-            $transaction->resaleListing->update([
+            $listing = ResaleListing::where('id', $transaction->resale_listing_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $listing->update([
                 'listing_status' => 'terjual',
                 'sold_at' => now(),
             ]);
