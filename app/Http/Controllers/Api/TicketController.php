@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTicketRequest;
+use App\Http\Resources\OwnershipHistoryResource;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use App\Services\TicketService;
@@ -94,6 +95,33 @@ class TicketController extends Controller
             new TicketResource($ticket),
             'Ticket uploaded successfully',
             201
+        );
+    }
+
+    /**
+     * Display the ownership history of a ticket.
+     */
+    public function history(string $id): JsonResponse
+    {
+        $ticket = Ticket::findOrFail($id);
+
+        Gate::authorize('view', $ticket);
+
+        $ticket->load([
+            'ownershipHistories' => function ($query) {
+                $query->orderByDesc('transferred_at')->orderByDesc('id');
+            },
+            'ownershipHistories.previousOwner' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'ownershipHistories.newOwner' => function ($query) {
+                $query->select('id', 'name');
+            },
+        ]);
+
+        return ApiResponse::success(
+            OwnershipHistoryResource::collection($ticket->ownershipHistories),
+            'Ticket ownership history retrieved successfully'
         );
     }
 }
