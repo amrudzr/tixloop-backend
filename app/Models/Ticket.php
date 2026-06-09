@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Ticket extends Model
@@ -79,5 +80,13 @@ class Ticket extends Model
     public function resaleListing(): HasOne
     {
         return $this->hasOne(ResaleListing::class);
+    }
+
+    /**
+     * Get the ownership history records for this ticket.
+     */
+    public function ownershipHistories(): HasMany
+    {
+        return $this->hasMany(TicketOwnershipHistory::class);
     }
 }
