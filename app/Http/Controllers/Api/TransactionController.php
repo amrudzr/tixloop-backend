@@ -43,7 +43,7 @@ class TransactionController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Transaction history retrieved successfully',
+            'message' => 'Riwayat transaksi berhasil diambil',
             'data' => $paginated['data'],
             'links' => $paginated['links'],
             'meta' => $paginated['meta'],
@@ -66,7 +66,7 @@ class TransactionController extends Controller
 
         return ApiResponse::success(
             new TransactionResource($transaction),
-            'Checkout initiated successfully',
+            'Proses pembayaran berhasil dimulai.',
             201
         );
     }
@@ -86,7 +86,7 @@ class TransactionController extends Controller
 
         return ApiResponse::success(
             new TransactionResource($transaction),
-            'Payment simulation successful. Escrow held.',
+            'Simulasi pembayaran berhasil. Dana ditahan sementara.',
             200
         );
     }
@@ -106,7 +106,7 @@ class TransactionController extends Controller
 
         return ApiResponse::success(
             new TransactionResource($transaction),
-            'Escrow released. Ownership transferred.',
+            'Pembayaran diteruskan. Kepemilikan tiket berhasil dipindahkan.',
             200
         );
     }
@@ -122,7 +122,7 @@ class TransactionController extends Controller
 
         return ApiResponse::success(
             new TransactionResource($transaction),
-            'Transaction retrieved successfully',
+            'Data transaksi berhasil diambil',
             200
         );
     }

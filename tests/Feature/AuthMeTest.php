@@ -30,7 +30,7 @@ it('returns the authenticated user profile', function () {
         ])
         ->assertJson([
             'success' => true,
-            'message' => 'Success',
+            'message' => 'Berhasil',
             'data' => [
                 'id' => $user->id,
                 'email' => 'jane@example.com',

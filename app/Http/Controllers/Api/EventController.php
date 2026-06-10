@@ -45,7 +45,7 @@ class EventController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Events retrieved successfully',
+            'message' => 'Daftar acara berhasil diambil',
             'data' => $paginated['data'],
             'links' => $paginated['links'],
             'meta' => $paginated['meta'],
@@ -61,7 +61,7 @@ class EventController extends Controller
 
         return ApiResponse::success(
             new EventResource($event),
-            'Event retrieved successfully'
+            'Data acara berhasil diambil'
         );
     }
 }

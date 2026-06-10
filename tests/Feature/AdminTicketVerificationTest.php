@@ -178,7 +178,7 @@ test('admin can verify a pending listing', function () {
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.verification_status', 'verified')
         ->assertJsonPath('data.listing_status', 'aktif')
-        ->assertJsonPath('message', 'Listing verified successfully');
+        ->assertJsonPath('message', 'Tiket berhasil diverifikasi');
 
     $listing->refresh();
     expect($listing->verification_status)->toBe('verified');
@@ -259,7 +259,7 @@ test('admin can reject a pending listing with reason', function () {
         ->assertJsonPath('data.verification_status', 'rejected')
         ->assertJsonPath('data.listing_status', 'ditolak')
         ->assertJsonPath('data.rejection_reason', $reason)
-        ->assertJsonPath('message', 'Listing rejected successfully');
+        ->assertJsonPath('message', 'Tiket berhasil ditolak');
 
     $listing->refresh();
     expect($listing->verification_status)->toBe('rejected');

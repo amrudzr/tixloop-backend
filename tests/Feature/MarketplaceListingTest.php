@@ -30,7 +30,7 @@ test('seller can create listing from owned active ticket', function () {
     $response->assertStatus(201)
         ->assertJson([
             'success' => true,
-            'message' => 'Marketplace listing created successfully',
+            'message' => 'Tiket berhasil ditawarkan untuk dijual.',
         ])
         ->assertJsonPath('data.ticket_id', $ticket->id)
         ->assertJsonPath('data.seller_id', $user->id)

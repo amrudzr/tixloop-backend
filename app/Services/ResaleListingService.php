@@ -95,7 +95,7 @@ class ResaleListingService
     private function assertOwnership(User $user, Ticket $ticket): void
     {
         if ($ticket->current_owner_id !== $user->id) {
-            throw new AccessDeniedHttpException('You do not own this ticket.');
+            throw new AccessDeniedHttpException('Anda tidak memiliki tiket ini.');
         }
     }
 
@@ -106,7 +106,7 @@ class ResaleListingService
     {
         if ($ticket->status !== 'aktif') {
             throw ValidationException::withMessages([
-                'ticket_id' => ['Ticket is not in active status.'],
+                'ticket_id' => ['Status tiket ini tidak aktif.'],
             ]);
         }
     }
@@ -122,7 +122,7 @@ class ResaleListingService
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'ticket_id' => ['This ticket already has an active or pending listing.'],
+                'ticket_id' => ['Tiket ini sudah ditawarkan untuk dijual.'],
             ]);
         }
     }
@@ -136,7 +136,7 @@ class ResaleListingService
 
         if (! is_array($metadata) || ! isset($metadata['original_price'])) {
             throw ValidationException::withMessages([
-                'ticket_id' => ['Ticket is missing original price metadata.'],
+                'ticket_id' => ['Tiket tidak memiliki data harga beli asli.'],
             ]);
         }
 
@@ -151,11 +151,11 @@ class ResaleListingService
         $errors = [];
 
         if ($askingPrice < $floorPrice) {
-            $errors['current_asking_price'][] = "Asking price cannot be below floor price ({$floorPrice}).";
+            $errors['current_asking_price'][] = "Harga jual tidak boleh lebih rendah dari batas bawah ({$floorPrice}).";
         }
 
         if ($askingPrice > $hardCapPrice) {
-            $errors['current_asking_price'][] = "Asking price cannot exceed hard cap price ({$hardCapPrice}).";
+            $errors['current_asking_price'][] = "Harga jual tidak boleh melebihi batas atas ({$hardCapPrice}).";
         }
 
         if ($errors) {

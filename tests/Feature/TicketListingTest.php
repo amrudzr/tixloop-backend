@@ -53,7 +53,7 @@ test('authenticated owner can list their own tickets with pagination', function 
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Tickets retrieved successfully',
+            'message' => 'Daftar tiket berhasil diambil',
         ]);
 
     // Assert only owner's tickets are returned (10 tickets)
@@ -99,7 +99,7 @@ test('owner can view their single ticket with ticket_code', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Ticket retrieved successfully',
+            'message' => 'Data tiket berhasil diambil',
             'data' => [
                 'id' => $ticket->id,
                 'ticket_code' => $ticket->ticket_code,
@@ -123,7 +123,7 @@ test('admin can view any ticket with ticket_code', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Ticket retrieved successfully',
+            'message' => 'Data tiket berhasil diambil',
             'data' => [
                 'id' => $ticket->id,
                 'ticket_code' => $ticket->ticket_code,

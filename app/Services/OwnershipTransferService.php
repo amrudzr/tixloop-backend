@@ -53,7 +53,7 @@ class OwnershipTransferService
     {
         if ($transaction->status !== 'pending') {
             throw ValidationException::withMessages([
-                'transaction' => ['This transaction is not in a valid state for payment.'],
+                'transaction' => ['Transaksi ini tidak dalam status yang valid untuk dibayar.'],
             ]);
         }
     }

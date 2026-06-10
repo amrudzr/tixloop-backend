@@ -29,7 +29,7 @@ class BurnPreventionController extends Controller
 
         return ApiResponse::success(
             new BurnPreventionMetricsResource($metrics),
-            'Burn prevention dashboard metrics retrieved successfully',
+            'Data pencegahan tiket hangus berhasil diambil',
         );
     }
 }

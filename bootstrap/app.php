@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ThrottleRequestsException $e, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return ApiResponse::error(
-                    'Too many login attempts. Please try again later.',
+                    'Terlalu banyak permintaan. Silakan coba lagi nanti.',
                     429,
                 );
             }
@@ -45,7 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ModelNotFoundException $e, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return ApiResponse::error(
-                    'Resource not found.',
+                    'Data yang Anda cari tidak ditemukan.',
                     404,
                 );
             }
@@ -54,7 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return ApiResponse::error(
-                    'Unauthenticated.',
+                    'Sesi Anda telah berakhir. Silakan masuk kembali.',
                     401,
                 );
             }
@@ -63,7 +63,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return ApiResponse::error(
-                    $e->getMessage() ?: 'This action is unauthorized.',
+                    $e->getMessage() ?: 'Anda tidak memiliki akses untuk melakukan tindakan ini.',
                     403,
                 );
             }
@@ -72,7 +72,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return ApiResponse::error(
-                    'Route or resource not found.',
+                    'Data yang Anda cari tidak ditemukan.',
                     404,
                 );
             }

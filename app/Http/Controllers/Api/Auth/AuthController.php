@@ -27,7 +27,7 @@ class AuthController extends Controller
 
         return ApiResponse::success(
             new AuthResource($result),
-            'Registration successful',
+            'Pendaftaran berhasil',
             201,
         );
     }
@@ -41,7 +41,7 @@ class AuthController extends Controller
 
         return ApiResponse::success(
             new AuthResource($result),
-            'Login successful',
+            'Berhasil masuk.',
         );
     }
 
@@ -53,7 +53,7 @@ class AuthController extends Controller
         $this->authService->logout($request->user());
 
         return ApiResponse::success(
-            message: 'Logged out successfully',
+            message: 'Berhasil keluar.',
         );
     }
 
@@ -66,7 +66,7 @@ class AuthController extends Controller
 
         return ApiResponse::success(
             new AuthResource($result),
-            'Token refreshed successfully',
+            'Sesi berhasil diperbarui',
         );
     }
 

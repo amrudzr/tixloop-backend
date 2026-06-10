@@ -16,7 +16,7 @@ class ApiResponse
     /**
      * @param  array<string, mixed>|object|null  $data
      */
-    public static function success(mixed $data = null, string $message = 'Success', int $status = 200, ?array $meta = null): JsonResponse
+    public static function success(mixed $data = null, string $message = 'Berhasil', int $status = 200, ?array $meta = null): JsonResponse
     {
         $response = [
             'success' => true,
@@ -34,7 +34,7 @@ class ApiResponse
     /**
      * @param  array<string, mixed>|null  $errors
      */
-    public static function error(string $message = 'Error', int $status = 400, ?array $errors = null): JsonResponse
+    public static function error(string $message = 'Terjadi kesalahan', int $status = 400, ?array $errors = null): JsonResponse
     {
         $response = [
             'success' => false,

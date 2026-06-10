@@ -15,7 +15,7 @@ it('revokes the current token and returns success', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Logged out successfully',
+            'message' => 'Berhasil keluar.',
         ]);
 });
 

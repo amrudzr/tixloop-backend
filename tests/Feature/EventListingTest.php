@@ -15,7 +15,7 @@ test('guest can list events', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Events retrieved successfully',
+            'message' => 'Daftar acara berhasil diambil',
         ]);
 
     expect($response->json('data'))->toHaveCount(3);
@@ -96,7 +96,7 @@ test('guest can view single event', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Event retrieved successfully',
+            'message' => 'Data acara berhasil diambil',
             'data' => [
                 'id' => $event->id,
                 'event_name' => 'Test Concert',

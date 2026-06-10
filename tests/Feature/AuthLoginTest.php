@@ -35,7 +35,7 @@ it('authenticates a user and returns a token', function () {
         ])
         ->assertJson([
             'success' => true,
-            'message' => 'Login successful',
+            'message' => 'Berhasil masuk.',
             'data' => [
                 'token_type' => 'Bearer',
                 'user' => [
@@ -151,7 +151,7 @@ it('returns 429 when login attempts exceed rate limit', function () {
     $response->assertStatus(429)
         ->assertJson([
             'success' => false,
-            'message' => 'Too many login attempts. Please try again later.',
+            'message' => 'Terlalu banyak permintaan. Silakan coba lagi nanti.',
         ]);
 });
 
@@ -187,6 +187,6 @@ it('allows login again after rate limit cooldown', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Login successful',
+            'message' => 'Berhasil masuk.',
         ]);
 });

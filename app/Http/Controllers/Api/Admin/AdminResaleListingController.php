@@ -36,7 +36,7 @@ class AdminResaleListingController extends Controller
 
         return ApiResponse::success(
             AdminResaleListingResource::collection($listings),
-            'Pending listings retrieved successfully',
+            'Daftar tiket menunggu verifikasi berhasil diambil',
             200,
             [
                 'current_page' => $listings->currentPage(),
@@ -59,7 +59,7 @@ class AdminResaleListingController extends Controller
 
         return ApiResponse::success(
             new AdminResaleListingResource($listing),
-            'Listing retrieved successfully',
+            'Data tiket menunggu verifikasi berhasil diambil',
             200
         );
     }
@@ -81,7 +81,7 @@ class AdminResaleListingController extends Controller
 
         return ApiResponse::success(
             new AdminResaleListingResource($listing),
-            'Listing verified successfully',
+            'Tiket berhasil diverifikasi',
             200
         );
     }
@@ -105,7 +105,7 @@ class AdminResaleListingController extends Controller
 
         return ApiResponse::success(
             new AdminResaleListingResource($listing),
-            'Listing rejected successfully',
+            'Tiket berhasil ditolak',
             200
         );
     }

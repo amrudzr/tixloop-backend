@@ -78,7 +78,7 @@ class EscrowService
     {
         if ($transaction->status !== 'paid' || $transaction->escrow_status !== 'held') {
             throw ValidationException::withMessages([
-                'transaction' => ['Escrow is not in a valid state for release.'],
+                'transaction' => ['Dana tidak dalam status ditahan yang valid untuk diteruskan.'],
             ]);
         }
     }

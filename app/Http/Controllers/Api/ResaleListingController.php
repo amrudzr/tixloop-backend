@@ -35,7 +35,7 @@ class ResaleListingController extends Controller
 
         return ApiResponse::success(
             SellerListingResource::collection($listings),
-            'Seller listings retrieved successfully',
+            'Daftar tiket Anda berhasil diambil',
             200,
             [
                 'current_page' => $listings->currentPage(),
@@ -60,7 +60,7 @@ class ResaleListingController extends Controller
 
         return ApiResponse::success(
             ResaleListingIndexResource::collection($listings),
-            'Marketplace listings retrieved successfully',
+            'Daftar tiket yang dijual berhasil diambil',
             200,
             [
                 'current_page' => $listings->currentPage(),
@@ -83,7 +83,7 @@ class ResaleListingController extends Controller
 
         return ApiResponse::success(
             new ResaleListingDetailResource($listing),
-            'Marketplace listing retrieved successfully',
+            'Data tiket yang dijual berhasil diambil',
             200
         );
     }
@@ -106,7 +106,7 @@ class ResaleListingController extends Controller
 
         return ApiResponse::success(
             new ResaleListingResource($listing),
-            'Marketplace listing created successfully',
+            'Tiket berhasil ditawarkan untuk dijual.',
             201
         );
     }

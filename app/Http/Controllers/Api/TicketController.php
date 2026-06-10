@@ -53,7 +53,7 @@ class TicketController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tickets retrieved successfully',
+            'message' => 'Daftar tiket berhasil diambil',
             'data' => $paginated['data'],
             'links' => $paginated['links'],
             'meta' => $paginated['meta'],
@@ -71,7 +71,7 @@ class TicketController extends Controller
 
         return ApiResponse::success(
             new TicketResource($ticket),
-            'Ticket retrieved successfully'
+            'Data tiket berhasil diambil'
         );
     }
 
@@ -93,7 +93,7 @@ class TicketController extends Controller
 
         return ApiResponse::success(
             new TicketResource($ticket),
-            'Ticket uploaded successfully',
+            'Tiket berhasil diunggah.',
             201
         );
     }
@@ -121,7 +121,7 @@ class TicketController extends Controller
 
         return ApiResponse::success(
             OwnershipHistoryResource::collection($ticket->ownershipHistories),
-            'Ticket ownership history retrieved successfully'
+            'Riwayat kepemilikan tiket berhasil diambil'
         );
     }
 }

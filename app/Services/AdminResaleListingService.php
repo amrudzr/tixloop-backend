@@ -90,7 +90,7 @@ class AdminResaleListingService
     {
         if ($listing->verification_status !== 'pending') {
             throw ValidationException::withMessages([
-                'listing' => ['Listing is not in pending status.'],
+                'listing' => ['Tiket tidak dalam status menunggu verifikasi.'],
             ]);
         }
     }

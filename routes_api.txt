@@ -1,0 +1,30 @@
+﻿
+ GET|HEAD api/v1/admin/listings .. Api\Admin\AdminResaleListingController@index
+ GET|HEAD api/v1/admin/listings/{id} .. Api\Admin\AdminResaleListingController@show
+ POST api/v1/admin/listings/{id}/reject .. Api\Admin\AdminResaleListingController@reject
+ POST api/v1/admin/listings/{id}/verify .. Api\Admin\AdminResaleListingController@verify
+ POST api/v1/auth/login .. Api\Auth\AuthController@login
+ POST api/v1/auth/logout .. Api\Auth\AuthController@logout
+ GET|HEAD api/v1/auth/me .. Api\Auth\AuthController@me
+ POST api/v1/auth/refresh .. Api\Auth\AuthController@refresh
+ POST api/v1/auth/register .. Api\Auth\AuthController@register
+ GET|HEAD api/v1/dashboard/burn-prevention .. Api\Dashboard\BurnPreventionController@index
+ GET|HEAD api/v1/dashboard/waste .. Api\Dashboard\WasteDashboardController@index
+ GET|HEAD api/v1/events .. Api\EventController@index
+ GET|HEAD api/v1/events/{id} .. Api\EventController@show
+ GET|HEAD api/v1/marketplace/listings .. Api\ResaleListingController@index
+ POST api/v1/marketplace/listings .. Api\ResaleListingController@store
+ GET|HEAD api/v1/marketplace/listings/{id} .. Api\ResaleListingController@show
+ POST api/v1/marketplace/listings/{id}/checkout .. Api\TransactionController@checkout
+ GET|HEAD api/v1/marketplace/my-listings .. Api\ResaleListingController@sellerListings
+ GET|HEAD api/v1/tickets .. Api\TicketController@index
+ POST api/v1/tickets/upload .. Api\TicketController@upload
+ GET|HEAD api/v1/tickets/{id} .. Api\TicketController@show
+ GET|HEAD api/v1/tickets/{id}/history .. Api\TicketController@history
+ GET|HEAD api/v1/transactions .. Api\TransactionController@index
+ GET|HEAD api/v1/transactions/{id} .. Api\TransactionController@show
+ POST api/v1/transactions/{id}/release-escrow .. Api\TransactionController@releaseEscrow
+ POST api/v1/transactions/{id}/simulate-payment .. Api\TransactionController@simulatePayment
+
+ Showing [26] routes
+

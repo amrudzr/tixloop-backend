@@ -30,7 +30,7 @@ test('authenticated user can upload a ticket with proof', function () {
     $response->assertStatus(201)
         ->assertJson([
             'success' => true,
-            'message' => 'Ticket uploaded successfully',
+            'message' => 'Tiket berhasil diunggah.',
         ])
         ->assertJsonPath('data.event_id', $event->id)
         ->assertJsonPath('data.current_owner_id', $user->id)

@@ -49,7 +49,7 @@ class CheckoutService
     private function assertBuyerIsNotSeller(User $buyer, ResaleListing $listing): void
     {
         if ($buyer->id === $listing->seller_id) {
-            throw new AccessDeniedHttpException('You cannot purchase your own listing.');
+            throw new AccessDeniedHttpException('Anda tidak dapat membeli tiket Anda sendiri.');
         }
     }
 
@@ -60,7 +60,7 @@ class CheckoutService
     {
         if ($listing->listing_status !== 'aktif' || $listing->verification_status !== 'verified') {
             throw ValidationException::withMessages([
-                'listing' => ['This listing is not available for purchase.'],
+                'listing' => ['Tiket ini tidak tersedia untuk dibeli.'],
             ]);
         }
     }
@@ -76,7 +76,7 @@ class CheckoutService
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'listing' => ['This listing already has an active transaction.'],
+                'listing' => ['Tiket ini sedang dalam proses transaksi lain.'],
             ]);
         }
     }

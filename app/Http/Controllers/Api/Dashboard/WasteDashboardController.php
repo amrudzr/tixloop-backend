@@ -22,7 +22,7 @@ class WasteDashboardController extends Controller
 
         return ApiResponse::success(
             new WasteDashboardResource($metrics),
-            'Waste dashboard metrics retrieved successfully',
+            'Data Dasbor Dampak TixLoop berhasil diambil',
         );
     }
 }

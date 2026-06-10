@@ -35,7 +35,7 @@ it('registers a new user and returns a token', function () {
         ])
         ->assertJson([
             'success' => true,
-            'message' => 'Registration successful',
+            'message' => 'Pendaftaran berhasil',
             'data' => [
                 'token_type' => 'Bearer',
                 'user' => [
