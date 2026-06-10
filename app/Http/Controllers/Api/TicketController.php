@@ -12,6 +12,8 @@ use App\Services\TicketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TicketController extends Controller
 {
@@ -123,5 +125,52 @@ class TicketController extends Controller
             OwnershipHistoryResource::collection($ticket->ownershipHistories),
             'Riwayat kepemilikan tiket berhasil diambil'
         );
+    }
+
+    /**
+     * Download the ticket proof file.
+     */
+    public function downloadProof(string $id): BinaryFileResponse|JsonResponse
+    {
+        $ticket = Ticket::findOrFail($id);
+
+        Gate::authorize('view', $ticket);
+
+        if (!$ticket->ticket_proof_path) {
+            return response()->json(['message' => 'File tidak ditemukan.'], 404);
+        }
+
+        $disk = config('filesystems.tickets_disk', 'local');
+        
+        if (!Storage::disk($disk)->exists($ticket->ticket_proof_path)) {
+            return response()->json(['message' => 'File tidak ditemukan.'], 404);
+        }
+
+        return response()->file(Storage::disk($disk)->path($ticket->ticket_proof_path));
+    }
+
+    /**
+     * Download the ticket physical photo file.
+     */
+    public function downloadPhysicalPhoto(string $id): BinaryFileResponse|JsonResponse
+    {
+        $ticket = Ticket::findOrFail($id);
+
+        Gate::authorize('view', $ticket);
+
+        $metadata = $ticket->ticket_metadata ?? [];
+        $physicalPhotoPath = $metadata['physical_photo_path'] ?? null;
+
+        if (!$physicalPhotoPath) {
+            return response()->json(['message' => 'File tidak ditemukan.'], 404);
+        }
+
+        $disk = config('filesystems.tickets_disk', 'local');
+
+        if (!Storage::disk($disk)->exists($physicalPhotoPath)) {
+            return response()->json(['message' => 'File tidak ditemukan.'], 404);
+        }
+
+        return response()->file(Storage::disk($disk)->path($physicalPhotoPath));
     }
 }
