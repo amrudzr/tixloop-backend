@@ -71,7 +71,7 @@ Mengambil daftar acara/event yang tersedia. Diperlukan untuk Dropdown saat Uploa
 
 - **URL**: `/events`
 - **Method**: `GET`
-- **Authentication**: Bearer Token
+- **Authentication**: Tidak perlu
 - **Query Parameter**: `search` (opsional, untuk mencari nama acara/kota)
 - **Response Success (200)**: Array ber-paginasi (dilengkapi `links` dan `meta`) yang berisi id event, nama event, kategori, lokasi, dll.
 - **Catatan Integrasi Frontend**: Wajib dipanggil pada form Upload Tiket untuk memetakan ID event yang dipilih pengguna.
@@ -238,7 +238,7 @@ Statistik alokasi ulang tiket.
 
 - **URL**: `/dashboard/burn-prevention`
 - **Method**: `GET`
-- **Authentication**: Tidak perlu
+- **Authentication**: Tidak perlu (Mendukung Auth Opsional jika disertakan)
 
 ---
 
