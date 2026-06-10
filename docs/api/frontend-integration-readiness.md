@@ -62,7 +62,7 @@ ticket_type    nullable  string max:50   ← NEW (BE-01)
 
 **SellerListingResource fields**: `id, original_price, current_asking_price, floor_price, hard_cap_price, verification_status, listing_status, rejection_reason (when rejected), ticket.seat_number, ticket.type, ticket.event.*, listed_at, sold_at`
 
-**Status badge mapping**: `ditangguhkan` → Pending Review · `aktif` → Active · `terjual` → Sold · `ditarik` → Withdrawn  
+**Status badge mapping**: `pending` → Pending Review · `aktif` → Active · `terjual` → Sold · `ditarik` → Withdrawn  
 Show `rejection_reason` + "Re-list" CTA when `verification_status === "rejected"`
 
 ---
