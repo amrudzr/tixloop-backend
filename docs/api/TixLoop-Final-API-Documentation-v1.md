@@ -264,3 +264,9 @@ Bagian ini merangkum hal-hal krusial yang diubah selama *Recovery Sprint* dan **
    - Seluruh teks *error/success* dari API sekarang sepenuhnya berbahasa Indonesia yang siap tampil di *toast notification*. Tidak ada lagi pesan bahasa Inggris.
    - Paginasi data list harus menggunakan pembacaan objek JSON dari `meta.current_page` dan `meta.last_page` untuk merender navigasi halaman (karena struktur `links` root telah ditiadakan pada beberapa route marketplace).
    - Perhatikan *error 403 Forbidden* pada tahap Pembelian. Sistem akan menolak jika pengguna lupa melakukan *switch account* saat mencoba meng-checkout tiket yang dijualnya sendiri.
+
+5. **Batasan MVP Saat Ini (MVP Constraints)**
+   - **Batalkan Penjualan:** Endpoint `DELETE /marketplace/listings/{id}` belum tersedia. Jika antarmuka membutuhkan tombol "Batalkan Penjualan", fitur ini dapat ditambahkan setelah integrasi MVP utama selesai.
+   - **Refund & Dispute:** Sistem *refund*, *dispute* (sengketa), dan penjadwalan otomatis penarikan dana (menunggu event selesai) **belum diimplementasikan** demi menjaga stabilitas demo MVP.
+   - **Pelepasan Dana:** Dana diteruskan ke penjual (Release Escrow) murni berdasarkan konfirmasi penyelesaian transaksi oleh pembeli secara manual (Phase 2).
+   - **Pembatasan Pembelian:** Penjual secara sistem dilarang keras membeli tiketnya sendiri (terdapat validasi backend).
