@@ -162,4 +162,50 @@ class ResaleListingService
             throw ValidationException::withMessages($errors);
         }
     }
+
+    /**
+     * Cancel a marketplace listing.
+     *
+     * @throws AccessDeniedHttpException
+     * @throws ValidationException
+     */
+    public function cancelListing(User $user, string $listingId): ResaleListing
+    {
+        return DB::transaction(function () use ($user, $listingId) {
+            $listing = ResaleListing::where('id', $listingId)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($listing->seller_id !== $user->id) {
+                throw new AccessDeniedHttpException('Anda tidak berhak membatalkan listing tiket ini.');
+            }
+
+            if (! in_array($listing->listing_status, ['aktif', 'ditangguhkan', 'ditolak'])) {
+                if ($listing->listing_status === 'dibatalkan') {
+                    throw ValidationException::withMessages([
+                        'listing' => ['Listing ini sudah dibatalkan sebelumnya.'],
+                    ]);
+                }
+                throw ValidationException::withMessages([
+                    'listing' => ['Listing dengan status ini tidak dapat dibatalkan.'],
+                ]);
+            }
+
+            $hasActiveTransaction = $listing->transactions()
+                ->whereIn('status', ['pending', 'paid', 'completed'])
+                ->exists();
+
+            if ($hasActiveTransaction) {
+                throw ValidationException::withMessages([
+                    'listing' => ['Listing tidak dapat dibatalkan karena memiliki transaksi yang sedang berjalan.'],
+                ]);
+            }
+
+            $listing->update([
+                'listing_status' => 'dibatalkan',
+            ]);
+
+            return $listing;
+        });
+    }
 }

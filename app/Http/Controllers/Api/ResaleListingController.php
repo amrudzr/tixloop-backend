@@ -110,4 +110,21 @@ class ResaleListingController extends Controller
             201
         );
     }
+
+    /**
+     * Cancel a marketplace listing.
+     */
+    public function destroy(Request $request, string $id): JsonResponse
+    {
+        $this->resaleListingService->cancelListing(
+            user: $request->user(),
+            listingId: $id
+        );
+
+        return ApiResponse::success(
+            null,
+            'Listing berhasil dibatalkan.',
+            200
+        );
+    }
 }
