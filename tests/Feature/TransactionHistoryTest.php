@@ -26,16 +26,16 @@ it('returns transaction history for logged-in user', function () {
     $this->actingAs($buyer)
         ->getJson('/api/v1/transactions')
         ->assertStatus(200)
-        ->assertJsonPath('data.data.0.id', $transaction->id)
-        ->assertJsonPath('data.data.0.buyer.id', $buyer->id)
-        ->assertJsonPath('data.data.0.seller.id', $seller->id)
-        ->assertJsonPath('data.data.0.ticket.event.id', $event->id);
+        ->assertJsonPath('data.0.id', $transaction->id)
+        ->assertJsonPath('data.0.buyer.id', $buyer->id)
+        ->assertJsonPath('data.0.seller.id', $seller->id)
+        ->assertJsonPath('data.0.ticket.event.id', $event->id);
 });
 
 it('does not return transactions of other users', function () {
     $otherBuyer = User::factory()->create();
     $seller = User::factory()->create();
-    
+
     Transaction::factory()->create([
         'buyer_id' => $otherBuyer->id,
         'seller_id' => $seller->id,
@@ -46,7 +46,7 @@ it('does not return transactions of other users', function () {
     $this->actingAs($me)
         ->getJson('/api/v1/transactions')
         ->assertStatus(200)
-        ->assertJsonCount(0, 'data.data');
+        ->assertJsonCount(0, 'data');
 });
 
 it('requires authentication to view transaction history', function () {

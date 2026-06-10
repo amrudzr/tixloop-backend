@@ -34,16 +34,20 @@ class TransactionController extends Controller
             'seller',
             'ticket.event',
         ])
-        ->where('buyer_id', $user->id)
-        ->orWhere('seller_id', $user->id)
-        ->orderBy('created_at', 'desc')
-        ->paginate(15);
+            ->where('buyer_id', $user->id)
+            ->orWhere('seller_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
-        return ApiResponse::success(
-            TransactionResource::collection($transactions)->response()->getData(true),
-            'Transaction history retrieved successfully',
-            200
-        );
+        $paginated = TransactionResource::collection($transactions)->response()->getData(true);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Transaction history retrieved successfully',
+            'data' => $paginated['data'],
+            'links' => $paginated['links'],
+            'meta' => $paginated['meta'],
+        ]);
     }
 
     /**
