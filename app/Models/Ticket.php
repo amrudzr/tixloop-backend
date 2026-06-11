@@ -89,4 +89,12 @@ class Ticket extends Model
     {
         return $this->hasMany(TicketOwnershipHistory::class);
     }
+
+    /**
+     * Get the transactions for this ticket.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }
