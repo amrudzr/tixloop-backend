@@ -62,7 +62,7 @@ class TransactionController extends Controller
             listing: $listing,
         );
 
-        $transaction->load(['buyer', 'seller', 'ticket']);
+        $transaction->load(['buyer', 'seller', 'ticket.event']);
 
         return ApiResponse::success(
             new TransactionResource($transaction),
@@ -76,13 +76,13 @@ class TransactionController extends Controller
      */
     public function simulatePayment(Request $request, string $id): JsonResponse
     {
-        $transaction = Transaction::with(['ticket', 'resaleListing'])->findOrFail($id);
+        $transaction = Transaction::with(['ticket.event', 'resaleListing'])->findOrFail($id);
 
         Gate::authorize('simulatePayment', $transaction);
 
         $transaction = $this->ownershipTransferService->simulatePayment($transaction);
 
-        $transaction->load(['buyer', 'seller', 'ticket']);
+        $transaction->load(['buyer', 'seller', 'ticket.event']);
 
         return ApiResponse::success(
             new TransactionResource($transaction),
@@ -96,13 +96,13 @@ class TransactionController extends Controller
      */
     public function releaseEscrow(Request $request, string $id): JsonResponse
     {
-        $transaction = Transaction::with(['ticket', 'resaleListing'])->findOrFail($id);
+        $transaction = Transaction::with(['ticket.event', 'resaleListing'])->findOrFail($id);
 
         Gate::authorize('releaseEscrow', $transaction);
 
         $transaction = $this->escrowService->releaseEscrow($transaction, $request->user());
 
-        $transaction->load(['buyer', 'seller', 'ticket']);
+        $transaction->load(['buyer', 'seller', 'ticket.event']);
 
         return ApiResponse::success(
             new TransactionResource($transaction),
@@ -116,7 +116,7 @@ class TransactionController extends Controller
      */
     public function show(Request $request, string $id): JsonResponse
     {
-        $transaction = Transaction::with(['buyer', 'seller', 'ticket', 'resaleListing'])->findOrFail($id);
+        $transaction = Transaction::with(['buyer', 'seller', 'ticket.event', 'resaleListing'])->findOrFail($id);
 
         Gate::authorize('view', $transaction);
 
