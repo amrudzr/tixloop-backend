@@ -126,8 +126,10 @@ Melihat daftar tiket yang ditawarkan untuk dijual kepada publik.
 - **URL**: `/marketplace/listings`
 - **Method**: `GET`
 - **Authentication**: Tidak perlu
-- **Query Parameter**: `search` (opsional)
-- **Response Success (200)**: Array tiket yang hanya berstatus `aktif` dan sudah diverifikasi admin.
+- **Query Parameter**: 
+  - `search` (opsional)
+  - `deals` (opsional, boolean) -> **[BARU]** Filter khusus untuk menampilkan hanya tiket Deals.
+- **Response Success (200)**: Array tiket yang hanya berstatus `aktif` dan sudah diverifikasi admin. Termasuk field `is_auto_drop` dan `floor_price` **[BARU]**.
 - **Catatan Integrasi Frontend**: Response ini ber-paginasi, namun mengembalikan parameter `meta` buatan khusus tanpa property `links`. Gunakan `meta.current_page` dan `meta.last_page` untuk kontrol navigasi.
 
 ### 4.2 Jual Tiket Saya (Buat Penawaran) [PENTING]
@@ -140,12 +142,15 @@ Penjual menawarkan tiket miliknya ke Marketplace.
   ```json
   {
     "ticket_id": "01JXXXX...",
-    "current_asking_price": 400000
+    "current_asking_price": 400000,
+    "is_auto_drop": true,
+    "floor_price": 300000
   }
   ```
 - **Response Success (201)**: "Tiket berhasil ditawarkan untuk dijual. Menunggu verifikasi admin." Status menjadi `ditangguhkan` (pending).
 - **Validation Error (422)**: 
   - Harga tidak valid. Harga jual **harus** berada di kisaran 45% hingga 115% dari `original_price` (Aturan ketat).
+  - `floor_price` wajib diisi jika `is_auto_drop` true, dan tidak boleh melebihi `original_price` **[BARU]**.
   - Tiket sedang dalam proses transaksi lain.
 - **Catatan Integrasi Frontend**: Cegah pengguna memasukkan harga ngawur sebelum menekan submit dengan memberikan helper text rentang harga.
 
@@ -270,3 +275,4 @@ Bagian ini merangkum hal-hal krusial yang diubah selama *Recovery Sprint* dan **
    - **Refund & Dispute:** Sistem *refund*, *dispute* (sengketa), dan penjadwalan otomatis penarikan dana (menunggu event selesai) **belum diimplementasikan** demi menjaga stabilitas demo MVP.
    - **Pelepasan Dana:** Dana diteruskan ke penjual (Release Escrow) murni berdasarkan konfirmasi penyelesaian transaksi oleh pembeli secara manual (Phase 2).
    - **Pembatasan Pembelian:** Penjual secara sistem dilarang keras membeli tiketnya sendiri (terdapat validasi backend).
+   - **Deals Lite [BARU]:** Fitur Deals Lite hanya menyediakan penanda (flag) Deals (`is_auto_drop`) dan input `floor_price` dari penjual. Belum menyediakan auto drop price, scheduler, atau dynamic pricing. Penjual harus mengubah harganya sendiri jika ingin menurunkan harga saat mendekati event.

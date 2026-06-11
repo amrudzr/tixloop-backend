@@ -334,6 +334,7 @@ Tidak
 #### Parameter Request
 - `search` (string, opsional)
 - `per_page` (integer, opsional)
+- `deals` (boolean, opsional) -> **[BARU]** Filter untuk menampilkan Deals Lite.
 #### Catatan Integrasi Frontend
 Endpoint publik untuk mencari tiket yang sedang dijual (hanya yang berstatus `aktif` dan diverifikasi `verified`).
 
@@ -347,8 +348,10 @@ Ya
 #### Body Request
 - `ticket_id` (string, wajib)
 - `current_asking_price` (numeric, wajib)
+- `is_auto_drop` (boolean, opsional) -> **[BARU]**
+- `floor_price` (numeric, opsional) -> **[BARU]**
 #### Catatan Integrasi Frontend
-Mengubah status tiket menjadi `listed` dan mendaftarkan ke marketplace. Tiket otomatis masuk antrean verifikasi admin.
+Mengubah status tiket menjadi `listed` dan mendaftarkan ke marketplace. Tiket otomatis masuk antrean verifikasi admin. `floor_price` wajib diisi jika `is_auto_drop` bernilai `true`.
 
 ### 12. Checkout Listing
 #### URL
@@ -420,6 +423,8 @@ Digunakan bersama dashboard waste untuk melacak tiket yang berisiko tidak terjua
    Pengguna dapat melacak secara jelas rekam jejak tiket dari tangan ke tangan melalui endpoint history tiket.
 6. **Dashboard Penjual menggunakan endpoint khusus.**
    Alih-alih menggunakan endpoint publik, penjual melihat listing mereka lewat `GET /api/v1/marketplace/my-listings`. Ini termasuk listing yang ditolak admin.
+7. **Fitur Deals Lite [BARU].**
+   Deals Lite hanya menyediakan penanda Deals (`is_auto_drop`) dan `floor_price` dari seller. Belum menyediakan auto drop price, scheduler, maupun dynamic pricing otomatis.
 
 ---
 
