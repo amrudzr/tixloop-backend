@@ -36,7 +36,7 @@ class ResaleListingService
     /**
      * Browse marketplace listings with filtering and pagination.
      */
-    public function browseListings(?string $search, int $perPage): LengthAwarePaginator
+    public function browseListings(?string $search, int $perPage, bool $deals = false): LengthAwarePaginator
     {
         $perPage = min($perPage, 50);
 
@@ -53,6 +53,10 @@ class ResaleListingService
             });
         }
 
+        if ($deals) {
+            $query->where('is_auto_drop', true);
+        }
+
         return $query->latest('listed_at')->paginate($perPage);
     }
 
@@ -62,24 +66,40 @@ class ResaleListingService
      * @throws AccessDeniedHttpException
      * @throws ValidationException
      */
-    public function createListing(User $user, Ticket $ticket, float $currentAskingPrice): ResaleListing
+    public function createListing(User $user, Ticket $ticket, float $currentAskingPrice, bool $isAutoDrop = false, ?float $floorPriceInput = null): ResaleListing
     {
         $this->assertOwnership($user, $ticket);
         $this->assertTicketIsActive($ticket);
         $this->assertNoActiveListing($ticket);
 
         $originalPrice = $this->resolveOriginalPrice($ticket);
-        $floorPrice = round($originalPrice * self::FLOOR_RATIO, 2);
         $hardCapPrice = round($originalPrice * self::MARKUP_CAP, 2);
+
+        if ($isAutoDrop) {
+            if ($floorPriceInput === null) {
+                throw ValidationException::withMessages([
+                    'floor_price' => ['Floor price wajib diisi jika Deals aktif.'],
+                ]);
+            }
+            if ($floorPriceInput > $originalPrice) {
+                throw ValidationException::withMessages([
+                    'floor_price' => ['Floor price tidak boleh melebihi original price.'],
+                ]);
+            }
+            $floorPrice = $floorPriceInput;
+        } else {
+            $floorPrice = round($originalPrice * self::FLOOR_RATIO, 2);
+        }
 
         $this->assertPriceBoundaries($currentAskingPrice, $floorPrice, $hardCapPrice);
 
-        return DB::transaction(function () use ($ticket, $user, $originalPrice, $currentAskingPrice, $floorPrice, $hardCapPrice) {
+        return DB::transaction(function () use ($ticket, $user, $originalPrice, $currentAskingPrice, $floorPrice, $hardCapPrice, $isAutoDrop) {
             return ResaleListing::create([
                 'ticket_id' => $ticket->id,
                 'seller_id' => $user->id,
                 'original_price' => $originalPrice,
                 'current_asking_price' => $currentAskingPrice,
+                'is_auto_drop' => $isAutoDrop,
                 'floor_price' => $floorPrice,
                 'hard_cap_price' => $hardCapPrice,
                 'verification_status' => 'pending',
@@ -146,11 +166,11 @@ class ResaleListingService
     /**
      * Validate that asking price falls within computed boundaries.
      */
-    private function assertPriceBoundaries(float $askingPrice, float $floorPrice, float $hardCapPrice): void
+    private function assertPriceBoundaries(float $askingPrice, ?float $floorPrice, float $hardCapPrice): void
     {
         $errors = [];
 
-        if ($askingPrice < $floorPrice) {
+        if ($floorPrice !== null && $askingPrice < $floorPrice) {
             $errors['current_asking_price'][] = "Harga jual tidak boleh lebih rendah dari batas bawah ({$floorPrice}).";
         }
 

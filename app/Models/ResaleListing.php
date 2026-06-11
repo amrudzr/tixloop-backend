@@ -22,6 +22,7 @@ class ResaleListing extends Model
         'seller_id',
         'original_price',
         'current_asking_price',
+        'is_auto_drop',
         'floor_price',
         'hard_cap_price',
         'verification_status',
@@ -43,6 +44,7 @@ class ResaleListing extends Model
         return [
             'original_price' => 'decimal:2',
             'current_asking_price' => 'decimal:2',
+            'is_auto_drop' => 'boolean',
             'floor_price' => 'decimal:2',
             'hard_cap_price' => 'decimal:2',
             'verified_at' => 'datetime',

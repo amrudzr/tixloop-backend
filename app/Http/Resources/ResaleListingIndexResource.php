@@ -17,6 +17,8 @@ class ResaleListingIndexResource extends JsonResource
         return [
             'id' => $this->id,
             'current_asking_price' => $this->current_asking_price,
+            'is_auto_drop' => (bool) $this->is_auto_drop,
+            'floor_price' => $this->floor_price !== null ? (float) $this->floor_price : null,
             'ticket' => [
                 'id' => $this->ticket->id,
                 'event' => [

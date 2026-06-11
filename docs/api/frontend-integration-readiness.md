@@ -60,7 +60,7 @@ ticket_type    nullable  string max:50   ← NEW (BE-01)
 |---|---|---|---|---|---|
 | 5 | Seller Dashboard | `GET /api/v1/marketplace/my-listings` | ❌ Not Integrated | Build seller listings page (auth required) | 🔴 Blocking |
 
-**SellerListingResource fields**: `id, original_price, current_asking_price, floor_price, hard_cap_price, verification_status, listing_status, rejection_reason (when rejected), ticket.seat_number, ticket.type, ticket.event.*, listed_at, sold_at`
+**SellerListingResource fields**: `id, original_price, current_asking_price, is_auto_drop (NEW), floor_price, hard_cap_price, verification_status, listing_status, rejection_reason (when rejected), ticket.seat_number, ticket.type, ticket.event.*, listed_at, sold_at`
 
 **Status badge mapping**: `pending` → Pending Review · `aktif` → Active · `terjual` → Sold · `ditarik` → Withdrawn  
 Show `rejection_reason` + "Re-list" CTA when `verification_status === "rejected"`

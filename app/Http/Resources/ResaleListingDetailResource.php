@@ -16,9 +16,10 @@ class ResaleListingDetailResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'current_asking_price' => $this->current_asking_price,
-            'original_price' => $this->original_price,
-            'floor_price' => $this->floor_price,
+            'current_asking_price' => (float) $this->current_asking_price,
+            'is_auto_drop' => (bool) $this->is_auto_drop,
+            'original_price' => (float) $this->original_price,
+            'floor_price' => $this->floor_price !== null ? (float) $this->floor_price : null,
             'hard_cap_price' => $this->hard_cap_price,
             'verification_status' => $this->verification_status,
             'listing_status' => $this->listing_status,
