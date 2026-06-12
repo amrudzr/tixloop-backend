@@ -300,7 +300,7 @@ test('reject fails when rejection_reason is too short', function () {
         ->assertJsonValidationErrors(['rejection_reason']);
 });
 
-test('admin cannot reject an already verified listing', function () {
+test('admin can reject an already verified listing', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
@@ -308,7 +308,24 @@ test('admin cannot reject an already verified listing', function () {
 
     $response = $this->actingAs($admin, 'sanctum')
         ->postJson("/api/v1/admin/listings/{$listing->id}/reject", [
-            'rejection_reason' => 'This should not be allowed because it is already verified.',
+            'rejection_reason' => 'Ticket is invalid or duplicate.',
+        ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('data.verification_status', 'rejected')
+        ->assertJsonPath('data.listing_status', 'ditolak');
+});
+
+test('admin cannot reject a sold listing', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $listing = ResaleListing::factory()->sold()->create();
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->postJson("/api/v1/admin/listings/{$listing->id}/reject", [
+            'rejection_reason' => 'This should not be allowed because it is already sold.',
         ]);
 
     $response->assertStatus(403);

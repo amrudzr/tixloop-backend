@@ -136,13 +136,13 @@ class TicketController extends Controller
 
         Gate::authorize('view', $ticket);
 
-        if (!$ticket->ticket_proof_path) {
+        if (! $ticket->ticket_proof_path) {
             return response()->json(['message' => 'File tidak ditemukan.'], 404);
         }
 
         $disk = config('filesystems.tickets_disk', 'local');
-        
-        if (!Storage::disk($disk)->exists($ticket->ticket_proof_path)) {
+
+        if (! Storage::disk($disk)->exists($ticket->ticket_proof_path)) {
             return response()->json(['message' => 'File tidak ditemukan.'], 404);
         }
 
@@ -161,13 +161,13 @@ class TicketController extends Controller
         $metadata = $ticket->ticket_metadata ?? [];
         $physicalPhotoPath = $metadata['physical_photo_path'] ?? null;
 
-        if (!$physicalPhotoPath) {
+        if (! $physicalPhotoPath) {
             return response()->json(['message' => 'File tidak ditemukan.'], 404);
         }
 
         $disk = config('filesystems.tickets_disk', 'local');
 
-        if (!Storage::disk($disk)->exists($physicalPhotoPath)) {
+        if (! Storage::disk($disk)->exists($physicalPhotoPath)) {
             return response()->json(['message' => 'File tidak ditemukan.'], 404);
         }
 

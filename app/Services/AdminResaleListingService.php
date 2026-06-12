@@ -66,7 +66,7 @@ class AdminResaleListingService
      */
     public function rejectListing(ResaleListing $listing, User $admin, string $reason): ResaleListing
     {
-        $this->assertPendingStatus($listing);
+        $this->assertCanBeRejected($listing);
 
         return DB::transaction(function () use ($listing, $admin, $reason) {
             $listing->update([
@@ -91,6 +91,26 @@ class AdminResaleListingService
         if ($listing->verification_status !== 'pending') {
             throw ValidationException::withMessages([
                 'listing' => ['Tiket tidak dalam status menunggu verifikasi.'],
+            ]);
+        }
+    }
+
+    /**
+     * Assert the listing can be rejected (is pending or active).
+     *
+     * @throws ValidationException
+     */
+    private function assertCanBeRejected(ResaleListing $listing): void
+    {
+        if (! in_array($listing->verification_status, ['pending', 'verified'])) {
+            throw ValidationException::withMessages([
+                'listing' => ['Tiket tidak dapat ditolak karena status verifikasi saat ini.'],
+            ]);
+        }
+
+        if (! in_array($listing->listing_status, ['menunggu_verifikasi', 'aktif', 'ditangguhkan'])) {
+            throw ValidationException::withMessages([
+                'listing' => ['Tiket tidak dapat ditolak karena sedang diproses atau sudah terjual.'],
             ]);
         }
     }
