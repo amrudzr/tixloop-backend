@@ -21,7 +21,7 @@ jobs:
             cd /home/wannaber/tixloop-api/tixloop-backend
 
             echo "Pull latest code..."
-            git pull origin main
+            git pull origin staging
 
             echo "Install dependencies..."
             composer install --no-dev --optimize-autoloader --no-interaction
