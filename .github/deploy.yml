@@ -1,0 +1,39 @@
+name: Deploy TixLoop Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          script: |
+            cd /home/wannaber/tixloop-api/tixloop-backend
+
+            echo "Pull latest code..."
+            git pull origin main
+
+            echo "Install dependencies..."
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "Run migrations..."
+            php artisan migrate --force
+
+            echo "Clear caches..."
+            php artisan optimize:clear
+
+            echo "Build caches..."
+            php artisan config:cache
+            php artisan route:cache
+
+            echo "Deployment finished"
