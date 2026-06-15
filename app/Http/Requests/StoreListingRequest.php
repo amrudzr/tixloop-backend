@@ -25,6 +25,8 @@ class StoreListingRequest extends FormRequest
         return [
             'ticket_id' => 'required|string|exists:tickets,id',
             'current_asking_price' => 'required|numeric|gt:0',
+            'is_auto_drop' => 'nullable|boolean',
+            'floor_price' => 'nullable|numeric|min:0',
         ];
     }
 }

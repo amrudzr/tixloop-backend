@@ -55,7 +55,8 @@ class ResaleListingController extends Controller
 
         $listings = $this->resaleListingService->browseListings(
             search: $validated['search'] ?? null,
-            perPage: (int) ($validated['per_page'] ?? 15)
+            perPage: (int) ($validated['per_page'] ?? 15),
+            deals: $request->query('deals') === 'true' || $request->query('deals') === '1'
         );
 
         return ApiResponse::success(
@@ -100,6 +101,8 @@ class ResaleListingController extends Controller
             user: $request->user(),
             ticket: $ticket,
             currentAskingPrice: (float) $validated['current_asking_price'],
+            isAutoDrop: (bool) ($validated['is_auto_drop'] ?? false),
+            floorPriceInput: isset($validated['floor_price']) ? (float) $validated['floor_price'] : null,
         );
 
         $listing->load(['ticket.event', 'seller']);

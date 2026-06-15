@@ -28,6 +28,8 @@ class ResaleListingPolicy
      */
     public function reject(User $user, ResaleListing $listing): bool
     {
-        return $user->hasRole('admin') && $listing->verification_status === 'pending';
+        return $user->hasRole('admin')
+            && in_array($listing->verification_status, ['pending', 'verified'])
+            && in_array($listing->listing_status, ['menunggu_verifikasi', 'aktif', 'ditangguhkan']);
     }
 }

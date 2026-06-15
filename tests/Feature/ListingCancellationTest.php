@@ -14,8 +14,11 @@ class ListingCancellationTest extends TestCase
     use RefreshDatabase;
 
     private User $seller;
+
     private User $buyer;
+
     private Ticket $ticket;
+
     private ResaleListing $listing;
 
     protected function setUp(): void
@@ -24,7 +27,7 @@ class ListingCancellationTest extends TestCase
 
         $this->seller = User::factory()->create();
         $this->buyer = User::factory()->create();
-        
+
         $this->ticket = Ticket::factory()->create([
             'current_owner_id' => $this->seller->id,
             'status' => 'aktif',
@@ -58,14 +61,14 @@ class ListingCancellationTest extends TestCase
             'id' => $this->listing->id,
             'listing_status' => 'dibatalkan',
         ]);
-        
+
         // Ensure ticket can be listed again
         $relistResponse = $this->actingAs($this->seller)
             ->postJson('/api/v1/marketplace/listings', [
                 'ticket_id' => $this->ticket->id,
                 'current_asking_price' => 500000,
             ]);
-            
+
         $relistResponse->assertStatus(201);
     }
 
@@ -85,7 +88,7 @@ class ListingCancellationTest extends TestCase
             ->deleteJson("/api/v1/marketplace/listings/{$this->listing->id}");
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['listing_status']);
+            ->assertJsonValidationErrors(['listing']);
     }
 
     public function test_cannot_cancel_listing_with_active_transaction(): void
@@ -121,7 +124,7 @@ class ListingCancellationTest extends TestCase
             ->deleteJson("/api/v1/marketplace/listings/{$this->listing->id}");
 
         $response->assertStatus(200);
-        
+
         $this->assertDatabaseHas('resale_listings', [
             'id' => $this->listing->id,
             'listing_status' => 'dibatalkan',

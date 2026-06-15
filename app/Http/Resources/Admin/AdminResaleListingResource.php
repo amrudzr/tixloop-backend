@@ -18,6 +18,7 @@ class AdminResaleListingResource extends JsonResource
             'id' => $this->id,
             'original_price' => $this->original_price,
             'current_asking_price' => $this->current_asking_price,
+            'is_auto_drop' => (bool) $this->is_auto_drop,
             'floor_price' => $this->floor_price,
             'hard_cap_price' => $this->hard_cap_price,
             'verification_status' => $this->verification_status,

@@ -20,7 +20,14 @@ class TicketPolicy
      */
     public function view(User $user, Ticket $ticket): bool
     {
-        return $user->id === $ticket->current_owner_id || $user->hasRole('admin');
+        if ($user->id === $ticket->current_owner_id || $user->hasRole('admin')) {
+            return true;
+        }
+
+        return $ticket->transactions()
+            ->where('buyer_id', $user->id)
+            ->whereIn('status', ['paid', 'completed'])
+            ->exists();
     }
 
     /**
