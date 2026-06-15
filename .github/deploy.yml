@@ -24,7 +24,10 @@ jobs:
             git pull origin staging
 
             echo "Install dependencies..."
-            composer install --no-dev --optimize-autoloader --no-interaction
+            composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+            echo "Enable maintenance..."
+            php artisan down || true
 
             echo "Run migrations..."
             php artisan migrate --force
@@ -35,5 +38,8 @@ jobs:
             echo "Build caches..."
             php artisan config:cache
             php artisan route:cache
+
+            echo "Disable maintenance..."
+            php artisan up
 
             echo "Deployment finished"
